@@ -34,6 +34,56 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
+<style>
+  /* Scoped styles for the interactive shot-data dashboard in #analysis.
+     Falls back to sane defaults if assets/style.css doesn't define these vars. */
+  #analysis .dash-controls{
+    display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:24px 0 20px; padding:16px 18px;
+    background:rgba(255,255,255,0.5);
+    border:1px solid rgba(0,0,0,0.08);
+    border-radius:10px;
+  }
+  #analysis .dash-field{ display:flex; flex-direction:column; gap:5px; min-width:130px; }
+  #analysis .dash-field label{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--ink-soft, #6b6156);
+  }
+  #analysis .dash-field select, #analysis .dash-field input[type=date]{
+    font-family:'Space Grotesk', sans-serif; font-size:13.5px;
+    padding:7px 9px; border:1px solid rgba(0,0,0,0.18); border-radius:6px;
+    background:#fff; color:inherit; min-width:130px;
+  }
+  #analysis .dash-daterange{ display:flex; align-items:center; gap:6px; }
+  #analysis .dash-reset{
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:.03em;
+    padding:8px 14px; border-radius:6px; border:1px solid #A83E2C; background:none;
+    color:#A83E2C; cursor:pointer;
+  }
+  #analysis .dash-reset:hover{ background:rgba(168,62,44,0.08); }
+  #analysis .dash-summary{
+    display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:20px;
+  }
+  #analysis .dash-stat{
+    background:rgba(255,255,255,0.5); border:1px solid rgba(0,0,0,0.08);
+    border-radius:10px; padding:14px 16px;
+  }
+  #analysis .dash-stat .stat-label{
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--ink-soft, #6b6156); display:block; margin-bottom:4px;
+  }
+  #analysis .dash-stat .stat-value{ font-size:1.5rem; font-weight:700; font-family:'Space Grotesk', sans-serif; }
+  #analysis .dash-subhead{
+    font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.05em;
+    text-transform:uppercase; color:var(--ink-soft, #6b6156); margin:26px 0 8px;
+  }
+  #analysis .stat-table th[data-key]{ cursor:pointer; }
+  #analysis .stat-table th[data-key]:hover{ color:#A83E2C; }
+  #analysis .dash-empty{ padding:24px; text-align:center; color:var(--ink-soft, #6b6156); font-size:13.5px; }
+  @media (max-width:760px){
+    #analysis .dash-summary{ grid-template-columns:repeat(2,1fr); }
+  }
+</style>
 </head>
 <body>
 
@@ -276,39 +326,575 @@
 
   <section class="section" id="analysis">
     <div class="section-head">
-      <h2>What ten games say</h2>
-      <p class="desc">One match tells you how you played. Ten tell you what's actually going wrong — this is the third-shot data from our last 10 recorded games, Dave &amp; Louise.</p>
+      <h2>What sixteen games say</h2>
+      <p class="desc">One match tells you how you played. Sixteen tell you what's actually going wrong. Filter the shot-level data from every recorded game, Dave &amp; Louise — by player, game, date, shot type, even which shot number in the rally.</p>
     </div>
+
+    <div class="dash-controls">
+      <div class="dash-field">
+        <label for="dashPlayer">Player</label>
+        <select id="dashPlayer">
+          <option value="all">All players</option>
+          <option value="Dave Roberts">Dave</option>
+          <option value="louise roberts">Louise</option>
+        </select>
+      </div>
+      <div class="dash-field">
+        <label for="dashGame">Game</label>
+        <select id="dashGame"><option value="all">All games</option></select>
+      </div>
+      <div class="dash-field">
+        <label>Date range</label>
+        <div class="dash-daterange">
+          <input type="date" id="dashDateStart">
+          <span>–</span>
+          <input type="date" id="dashDateEnd">
+        </div>
+      </div>
+      <div class="dash-field">
+        <label for="dashLocation">Location</label>
+        <select id="dashLocation">
+          <option value="all">All locations</option>
+          <option value="PickleBOS">PickleBOS</option>
+          <option value="Edmonton Sports Centre">Edmonton</option>
+          <option value="Ipop">Ipop</option>
+          <option value="Tsunami">Tsunami</option>
+        </select>
+      </div>
+      <div class="dash-field">
+        <label for="dashType">Shot type</label>
+        <select id="dashType">
+          <option value="all">All types</option>
+          <option value="dink">Dink</option>
+          <option value="drive">Drive</option>
+          <option value="drop">Drop</option>
+          <option value="smash">Smash</option>
+          <option value="lob">Lob</option>
+          <option value="atp">ATP</option>
+        </select>
+      </div>
+      <div class="dash-field">
+        <label for="dashShotNum">Shot number</label>
+        <select id="dashShotNum">
+          <option value="all">All shots</option>
+          <option value="serve">Serve (1)</option>
+          <option value="return">Return (2)</option>
+          <option value="3">3rd shot</option>
+          <option value="4">4th shot</option>
+          <option value="5">5th shot</option>
+          <option value="transition">Transition (6–8)</option>
+          <option value="extended">Extended rally (9+)</option>
+        </select>
+      </div>
+      <div class="dash-field">
+        <label for="dashResult">Result</label>
+        <select id="dashResult">
+          <option value="all">Win + loss</option>
+          <option value="win">Wins only</option>
+          <option value="loss">Losses only</option>
+        </select>
+      </div>
+      <button class="dash-reset" id="dashReset">Reset filters</button>
+    </div>
+
+    <div class="dash-summary" id="dashSummary"></div>
+
+    <div class="dash-subhead" id="dashTableTitle">Breakdown by shot type</div>
     <div class="stat-table-wrap">
-      <table class="stat-table">
-        <thead>
-          <tr>
-            <th>Game</th>
-            <th>3rds</th>
-            <th>Drops</th>
-            <th>Drop%</th>
-            <th>Drives</th>
-            <th>Drive%</th>
-            <th>Win%</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>1</td><td>20</td><td>7</td><td>100%</td><td>12</td><td>67%</td><td class="win-good">60%</td></tr>
-          <tr><td>2</td><td>13</td><td>6</td><td>100%</td><td>5</td><td>80%</td><td class="win-good">54%</td></tr>
-          <tr><td>3</td><td>15</td><td>7</td><td>71%</td><td>8</td><td>88%</td><td class="win-good">67%</td></tr>
-          <tr><td>4</td><td>24</td><td>16</td><td>94%</td><td>7</td><td>71%</td><td class="win-mid">46%</td></tr>
-          <tr><td>5</td><td>23</td><td>14</td><td>79%</td><td>9</td><td>100%</td><td class="win-good">50%</td></tr>
-          <tr><td>6</td><td>13</td><td>11</td><td>64%</td><td>2</td><td>50%</td><td class="win-low">8%</td></tr>
-          <tr><td>7</td><td>22</td><td>13</td><td>92%</td><td>7</td><td>71%</td><td class="win-mid">36%</td></tr>
-          <tr><td>8</td><td>16</td><td>7</td><td>86%</td><td>9</td><td>56%</td><td class="win-mid">31%</td></tr>
-          <tr><td>9</td><td>12</td><td>8</td><td>75%</td><td>3</td><td>100%</td><td class="win-mid">33%</td></tr>
-          <tr><td>10</td><td>19</td><td>9</td><td>78%</td><td>5</td><td>80%</td><td class="win-mid">47%</td></tr>
-          <tr class="totals"><td>Total</td><td>177</td><td>98</td><td>84%</td><td>67</td><td>76%</td><td>44%</td></tr>
-        </tbody>
-      </table>
+      <table class="stat-table" id="dashTypeTable"></table>
     </div>
-    <p class="table-takeaway"><strong>Key takeaway:</strong> rally win% falls off a cliff from Game 6 on (8–36%), even though third-shot execution stays strong (65–100%) the whole way through. The third shot isn't the leak — it's the transition after it.</p>
+
+    <div class="dash-subhead">Per-game detail</div>
+    <div class="stat-table-wrap">
+      <table class="stat-table" id="dashGameTable"></table>
+    </div>
+
+    <p class="table-takeaway"><strong>How to read it:</strong> success% is the rate a shot landed in play without a fault; win% is the rate the rally was won when that shot occurred. Games 4, 5 and 7 show Dave-only rows — his partner in those wasn't name-tagged in the source footage.</p>
   </section>
+
+  <script>
+  (function(){
+    // ---------- Games metadata ----------
+    var GAMES = [
+      {n:1, date:"2026-07-17", location:"PickleBOS", score:"11-8", result:"win"},
+      {n:2, date:"2026-07-17", location:"PickleBOS", score:"12-10", result:"win"},
+      {n:3, date:"2026-07-17", location:"PickleBOS", score:"2-11", result:"loss"},
+      {n:4, date:"2026-07-17", location:"PickleBOS", score:"11-7", result:"win"},
+      {n:5, date:"2026-07-17", location:"PickleBOS", score:"5-11", result:"loss"},
+      {n:6, date:"2026-08-17", location:"Edmonton Sports Centre", score:"7-11", result:"loss"},
+      {n:7, date:"2026-08-17", location:"Edmonton Sports Centre", score:"11-6", result:"win"},
+      {n:8, date:"2026-08-30", location:"Ipop", score:"11-9", result:"win"},
+      {n:9, date:"2026-08-30", location:"Ipop", score:"11-4", result:"win"},
+      {n:10, date:"2026-08-30", location:"Ipop", score:"12-10", result:"win"},
+      {n:11, date:"2026-08-30", location:"Ipop", score:"11-7", result:"win"},
+      {n:12, date:"2026-09-03", location:"Tsunami", score:"11-4", result:"win"},
+      {n:13, date:"2026-09-03", location:"Tsunami", score:"5-11", result:"loss"},
+      {n:14, date:"2026-09-03", location:"Tsunami", score:"6-11", result:"loss"},
+      {n:15, date:"2026-09-03", location:"Tsunami", score:"5-11", result:"loss"},
+      {n:16, date:"2026-09-03", location:"Tsunami", score:"1-11", result:"loss"}
+    ];
+
+    // ---------- Raw shot-number x type aggregates ----------
+    // [game, player, shotNum, type, total, faults, unforcedFaults, avgQuality, avgSpeed, winPct]
+    var D="Dave Roberts", L="louise roberts";
+    var RAW = [
+[1,D,1,"",15,0,null,0.6662,31.4087,41.67],[1,D,2,"",11,0,null,0.7615,26.4263,54.55],
+[1,D,3,"drive",5,1,null,0.9238,40.8908,20],[1,D,3,"drop",10,1,1,0.7237,29.0798,50],[1,D,3,"smash",1,1,null,1,60,0],
+[1,D,4,"dink",2,0,null,0.734,17.0335,50],[1,D,4,"drive",3,1,null,0.7843,20.782,66.67],[1,D,4,"smash",1,0,null,0.215,24.299,100],
+[1,D,5,"dink",3,0,null,0.7687,31.3767,0],[1,D,5,"drive",2,0,null,0.7725,20.9145,100],[1,D,5,"drop",3,0,null,0.837,19.3407,33.33],[1,D,5,"smash",1,1,0,0,25.818,0],[1,D,5,"",1,0,null,null,null,0],
+[1,D,6,"atp",1,0,null,0.771,28.808,0],[1,D,6,"dink",2,0,null,0.7385,17.885,50],[1,D,6,"drive",1,0,null,0.884,21.696,100],[1,D,6,"drop",1,1,0,0,17.598,0],[1,D,6,"smash",3,1,0,0.558,29.2077,66.67],
+[1,D,7,"atp",1,1,null,0,34.78,0],[1,D,7,"dink",3,1,0,0.5823,19.4063,33.33],[1,D,7,"drive",2,0,null,0.8395,16.2215,50],
+[1,D,9,"dink",1,0,null,0.575,15.331,100],[1,D,10,"smash",1,0,null,1,45.482,0],[1,D,11,"drive",1,0,null,0.829,22.764,100],
+[1,D,12,"drop",1,1,null,0,18.508,0],[1,D,13,"smash",1,0,null,1,51.793,100],[1,D,15,"smash",1,0,null,0.865,37.301,100],[1,D,17,"smash",1,0,null,0.524,30.483,100],
+[1,L,1,"",12,0,null,0.764,32.7196,50],[1,L,2,"",10,1,1,0.7161,26.4485,70],
+[1,L,3,"drive",2,1,null,0.782,31.3095,50],[1,L,3,"drop",6,0,null,0.816,28.6383,66.67],
+[1,L,4,"dink",2,1,0,0.377,8.494,50],[1,L,4,"drive",9,1,0,0.7081,20.427,66.67],
+[1,L,5,"dink",1,0,null,1,14.729,100],[1,L,5,"drive",5,0,null,0.8168,23.295,40],[1,L,5,"drop",1,0,null,0.773,27.393,100],
+[1,L,6,"drive",1,0,null,0.8,23.874,100],
+[1,L,7,"dink",1,1,0,0,18.259,0],[1,L,7,"drive",2,0,null,0.688,23.191,100],[1,L,7,"drop",1,0,null,0.701,19.791,0],
+[1,L,8,"dink",1,0,null,0.882,16.977,100],[1,L,8,"smash",1,0,null,0.474,29.486,0],
+[1,L,9,"dink",2,1,0,0.299,15.8045,0],[1,L,10,"drive",1,0,null,0.863,15.08,100],[1,L,11,"drop",1,1,0,0,41.271,0],
+
+[2,D,1,"",19,1,null,0.6485,31.9011,57.14],[2,D,2,"",8,0,null,0.7664,29.4115,50],
+[2,D,3,"drive",5,0,null,0.8424,37.5044,80],[2,D,3,"drop",10,1,1,0.756,32.6009,50],
+[2,D,4,"drive",3,1,0,0.4917,20.7257,33.33],[2,D,4,"drop",1,1,0,0,19.446,0],[2,D,4,"smash",4,0,null,0.4063,32.6885,50],
+[2,D,5,"dink",3,0,null,0.5667,30.0257,100],[2,D,5,"drive",3,0,null,0.7857,26.8237,33.33],[2,D,5,"drop",4,0,null,0.803,21.2175,50],[2,D,5,"smash",1,0,null,0,14.438,100],
+[2,D,6,"smash",3,2,0,0.1627,28.3273,33.33],
+[2,D,7,"dink",1,0,null,0.756,16.215,100],[2,D,7,"drive",1,0,null,0.885,30.953,0],[2,D,7,"drop",1,0,null,0.883,18.249,0],[2,D,7,"smash",2,0,null,0.315,26.2985,100],
+[2,D,9,"smash",2,0,null,0.0005,13.9155,50],
+[2,L,1,"",13,1,1,0.7172,30.3225,40],[2,L,2,"",9,0,null,0.7788,26.7472,33.33],
+[2,L,3,"drive",4,0,null,0.581,26.5963,25],[2,L,3,"drop",4,2,null,0.4433,32.8715,33.33],
+[2,L,4,"dink",2,0,null,0.7705,25.0635,50],[2,L,4,"drive",3,0,null,0.7953,20.8237,33.33],[2,L,4,"smash",1,0,null,0.016,20.317,100],
+[2,L,5,"drop",2,2,null,0,23.4895,0],
+[2,L,6,"dink",2,1,0,0.442,20.5935,0],[2,L,6,"drive",1,0,null,0.707,18.17,100],
+[2,L,7,"drive",1,0,null,0.601,17.003,100],[2,L,8,"drive",1,0,null,0.575,15.527,0],[2,L,8,"smash",1,0,null,0,17.983,100],
+
+[3,D,1,"",7,0,null,0.6741,32.4559,14.29],[3,D,2,"",12,0,null,0.7178,29.2925,50],
+[3,D,3,"drive",1,1,null,0.96,24.927,0],[3,D,3,"drop",9,3,3,0.4878,26.6082,0],
+[3,D,4,"dink",2,0,null,0.7,14.8135,50],[3,D,4,"drive",10,1,null,0.7589,23.6572,60],[3,D,4,"lob",1,0,null,0.007,60,0],[3,D,4,"smash",1,0,null,1,50.538,100],
+[3,D,5,"dink",1,0,null,0.781,17.483,0],[3,D,5,"drop",1,0,null,0.7,17.628,0],
+[3,D,6,"drive",4,1,0,0.4955,23.626,50],[3,D,6,"smash",2,1,null,0,18.3375,50],
+[3,D,7,"dink",2,1,null,0.8135,13.569,0],[3,D,7,"drop",2,1,null,0.5,26.421,0],
+[3,D,8,"drive",2,0,null,0.9065,21.0975,50],[3,D,8,"smash",1,0,null,1,43.444,0],
+[3,D,10,"dink",1,0,null,1,16.995,100],[3,D,10,"smash",1,1,0,0,27.246,0],[3,D,12,"dink",1,0,null,0.813,18.357,100],
+[3,L,1,"",9,0,null,0.8167,31.1243,12.5],[3,L,2,"",11,0,null,0.7992,27.6212,54.55],
+[3,L,3,"drive",1,0,null,0.66,28.399,0],[3,L,3,"drop",2,1,1,0.302,27.0055,50],
+[3,L,4,"drive",4,2,null,0.4865,23.9615,25],
+[3,L,5,"dink",2,1,0,0.5,13.839,0],[3,L,5,"drive",2,0,null,0.748,20.8605,0],[3,L,5,"drop",1,1,null,0,25.132,0],
+[3,L,6,"dink",1,0,null,1,9.685,0],[3,L,6,"drive",1,0,null,0.842,22.668,100],
+[3,L,8,"dink",1,0,null,0.695,19.976,0],[3,L,9,"dink",1,0,null,1,14.109,0],[3,L,10,"dink",1,1,0,0,17.763,0],
+[3,L,11,"drive",1,0,null,0.869,29.016,0],[3,L,13,"smash",1,1,0,0,23.246,0],
+
+[4,D,1,"",15,0,null,0.7545,33.5834,46.67],[4,D,2,"",11,0,null,0.7356,26.2581,81.82],
+[4,D,3,"drive",1,1,null,0.867,35.868,0],[4,D,3,"drop",8,0,null,0.8274,25.8422,37.5],
+[4,D,4,"dink",5,1,null,0.6866,25.2078,60],[4,D,4,"drive",4,0,null,0.7898,29.9338,50],[4,D,4,"drop",1,1,0,0,19.285,0],[4,D,4,"smash",1,0,null,0,16.209,100],[4,D,4,"",1,0,null,null,null,0],
+[4,D,5,"dink",3,2,0,0.3333,14.3473,0],[4,D,5,"drive",2,0,null,0.8415,30.3195,0],[4,D,5,"drop",3,1,null,0.6667,27.439,66.67],
+[4,D,6,"dink",3,0,null,0.7517,16.718,66.67],[4,D,6,"smash",1,0,null,0.028,20.558,100],
+[4,D,7,"dink",1,1,null,0,60,0],[4,D,7,"drive",3,1,0,0.5287,36.0537,33.33],[4,D,7,"drop",1,0,null,0.771,18.832,0],[4,D,7,"smash",1,1,0,0,28.127,0],
+[4,D,8,"drive",2,0,null,0.791,21.48,50],[4,D,8,"smash",1,0,null,1,45.651,100],
+[4,D,9,"drive",2,0,null,0.811,25.343,0],[4,D,10,"drive",2,0,null,0.7995,23.8295,50],
+[4,D,11,"dink",1,0,null,0.7,17.046,0],[4,D,13,"drive",1,1,0,0,38.287,0],
+
+[5,D,1,"",11,0,null,0.6917,29.5952,40],[5,D,2,"",11,0,null,0.7662,25.1132,54.55],
+[5,D,3,"drive",3,2,null,0.874,30.4203,33.33],[5,D,3,"drop",3,0,null,0.8177,20.395,66.67],
+[5,D,4,"dink",5,3,0,0.3436,28.4104,0],[5,D,4,"drop",1,1,null,0,22.472,0],
+[5,D,5,"dink",1,0,null,0.7,10.356,100],[5,D,5,"drive",2,0,null,0.779,20.996,0],[5,D,5,"drop",1,0,null,0.743,22.751,100],[5,D,5,"smash",1,0,null,1,60,100],
+[5,D,6,"drive",2,0,null,0.92,28.1995,50],
+[5,D,7,"dink",1,0,null,0.773,16.58,0],[5,D,7,"lob",1,1,0,0,45.084,0],
+[5,D,8,"smash",1,0,null,0.927,38.544,100],[5,D,10,"dink",1,0,null,1,11.899,100],
+[5,D,12,"dink",2,0,null,0.8705,18.305,100],[5,D,14,"dink",1,0,null,1,15.852,100],[5,D,16,"atp",1,0,null,0.983,25.029,100],
+
+[6,D,1,"",5,0,null,0.7304,32.0632,20],[6,D,2,"",10,1,1,0.5465,26.2105,40],
+[6,D,3,"drive",1,0,null,0.49,13.608,0],[6,D,3,"drop",5,1,0,0.6,18.551,20],[6,D,3,"smash",1,0,null,1,60,100],
+[6,D,4,"dink",4,1,null,0.6455,17.269,0],[6,D,4,"drive",7,1,0,0.7136,25.7277,42.86],[6,D,4,"smash",1,1,0,0,58.69,0],
+[6,D,5,"drive",1,0,null,0.942,25.602,100],
+[6,D,6,"drive",2,0,null,0.7445,17.7475,50],[6,D,6,"drop",1,1,0,0,18.544,0],[6,D,6,"smash",1,0,null,0.308,26.155,100],
+[6,D,8,"dink",1,0,null,0.31,17.687,0],[6,D,8,"smash",1,0,null,1,60,100],
+[6,D,9,"dink",1,0,null,1,7.562,0],[6,D,12,"dink",1,0,null,1,10.867,0],[6,D,13,"drop",1,1,null,0,15.043,100],
+[6,L,1,"",17,3,1,0.6871,33.4851,60],[6,L,2,"",10,1,1,0.7118,25.7147,70],
+[6,L,3,"drive",7,1,null,0.8171,23.763,42.86],[6,L,3,"drop",3,0,null,0.7737,26.1573,100],
+[6,L,4,"dink",2,1,null,0.35,18.1085,50],[6,L,4,"drive",1,0,null,0.803,21.871,100],
+[6,L,5,"drive",4,0,null,0.8182,22.1518,75],[6,L,5,"smash",1,0,null,0.734,34.674,100],
+[6,L,6,"dink",4,0,null,0.9028,13.1118,75],
+[6,L,7,"dink",3,0,null,0.8,15.578,100],[6,L,7,"drive",1,0,null,0.723,23.973,100],[6,L,7,"drop",1,0,null,1,29.938,0],
+[6,L,8,"dink",3,0,null,0.8857,14.7287,66.67],[6,L,9,"dink",1,0,null,0.855,17.905,100],
+[6,L,10,"dink",1,0,null,0.76,16.244,100],[6,L,10,"drive",1,0,null,0.665,11.814,0],
+[6,L,11,"drive",1,0,null,0.737,18.427,100],[6,L,13,"smash",1,0,null,0.261,25.22,100],
+
+[7,D,1,"",13,0,null,0.7931,31.9725,61.54],[7,D,2,"",10,0,null,0.7274,25.5898,60],
+[7,D,3,"dink",1,0,null,0.836,16.476,100],[7,D,3,"drive",2,0,null,0.8275,30.832,100],[7,D,3,"drop",6,2,1,0.5667,27.1678,33.33],[7,D,3,"lob",1,0,null,0.016,60,0],
+[7,D,4,"dink",2,0,null,0.8905,23.7215,50],[7,D,4,"drive",6,0,null,0.802,22.3195,50],[7,D,4,"smash",3,1,0,0.1633,23.622,33.33],
+[7,D,5,"dink",1,0,null,0.875,15.008,100],[7,D,5,"drive",2,0,null,0.756,18.8105,50],[7,D,5,"drop",1,0,null,0.701,17.238,100],[7,D,5,"smash",1,0,null,0,10.499,100],
+[7,D,6,"dink",3,2,0,0.3333,20.743,0],[7,D,6,"drive",1,0,null,0.949,20.925,0],[7,D,6,"lob",1,0,null,0.012,60,0],[7,D,6,"smash",2,1,null,0.197,18.8605,50],
+[7,D,7,"drive",2,0,null,0.6925,15.499,50],[7,D,7,"drop",1,0,null,1,46.123,0],
+[7,D,8,"dink",3,1,0,0.5667,17.7083,33.33],[7,D,8,"drive",1,0,null,0.812,23.626,0],[7,D,8,"smash",1,0,null,0,11.537,100],
+[7,D,10,"drive",1,0,null,0.832,39.187,100],[7,D,10,"smash",1,0,null,1,52.062,0],
+
+[8,D,1,"",15,0,null,0.7351,30.7279,58.33],[8,D,2,"",11,1,null,0.6386,28.5719,36.36],
+[8,D,3,"drive",4,0,null,0.9055,28.512,50],[8,D,3,"drop",4,1,1,0.5588,20.4783,25],
+[8,D,4,"dink",4,0,null,0.7588,26.5943,100],[8,D,4,"drive",5,1,0,0.5578,22.2552,20],[8,D,4,"smash",1,0,null,1,43.067,100],
+[8,D,5,"drive",1,0,null,0.746,39.159,0],[8,D,5,"drop",4,0,null,0.925,18.3523,50],[8,D,5,"lob",1,0,null,0.009,60,0],[8,D,5,"smash",1,0,null,0.476,29.521,100],
+[8,D,6,"dink",1,0,null,1,14.547,0],[8,D,6,"drive",2,0,null,0.758,21.272,100],[8,D,6,"smash",6,1,null,0.4558,32.802,66.67],
+[8,D,7,"drive",3,1,null,0.6287,26.344,33.33],[8,D,7,"drop",1,0,null,1,15.367,100],[8,D,7,"lob",1,0,null,0.011,60,0],[8,D,7,"smash",1,0,null,1,53.514,100],
+[8,D,8,"dink",1,0,null,1,18.673,0],[8,D,8,"drive",3,1,null,0.5613,27.2047,66.67],[8,D,8,"smash",3,0,null,0.8173,43.3183,66.67],[8,D,8,"",1,0,null,null,null,100],
+[8,D,9,"drive",2,0,null,0.732,23.105,100],[8,D,9,"drop",1,1,0,0,24.446,0],[8,D,9,"smash",1,1,0,0,60,0],
+[8,D,10,"dink",1,0,null,1,16.396,0],[8,D,10,"drive",2,1,null,0.8805,16.893,0],[8,D,10,"smash",1,1,0,0,7.409,0],
+[8,D,11,"dink",1,0,null,0.503,17.994,100],[8,D,11,"smash",1,0,null,0.591,31.824,100],
+[8,D,12,"dink",2,1,0,0.35,17.734,0],[8,D,12,"drive",1,1,null,0.839,15.166,0],
+[8,D,13,"drive",1,0,null,0.751,13.577,100],[8,D,14,"dink",1,0,null,0.844,18.688,0],[8,D,15,"smash",1,0,null,0,14.163,100],[8,D,18,"dink",1,0,null,0.6,19.214,0],
+[8,L,1,"",11,0,null,0.7923,34.0289,27.27],[8,L,2,"",10,3,2,0.4915,24.0159,80],
+[8,L,3,"drive",6,1,null,0.8073,24.7507,50],[8,L,3,"drop",4,1,1,0.502,21.6988,25],
+[8,L,4,"dink",1,0,null,0.7,16.184,100],[8,L,4,"drive",4,0,null,0.8723,24.954,75],[8,L,4,"smash",1,0,null,0.489,29.786,0],
+[8,L,5,"drive",4,0,null,0.7308,19.3948,50],[8,L,5,"drop",2,1,null,0.5,13.471,50],
+[8,L,6,"dink",1,0,null,0.846,15.974,0],[8,L,6,"smash",1,0,null,0.765,35.299,0],
+[8,L,7,"drive",1,0,null,0.876,24.625,0],[8,L,7,"drop",1,0,null,0.742,19.67,100],
+[8,L,8,"drive",1,0,null,0.75,16.835,0],[8,L,9,"drive",1,0,null,0.879,25.976,100],
+[8,L,10,"drive",1,0,null,0.803,25.066,100],[8,L,16,"drive",1,0,null,0.77,19.418,0],
+
+[9,D,1,"",6,0,null,0.7747,32.7747,50],[9,D,2,"",8,0,null,0.7528,25.7707,62.5],
+[9,D,3,"dink",1,0,null,0.7,17.962,0],[9,D,3,"drive",3,0,null,0.825,28.1907,33.33],[9,D,3,"drop",5,1,1,0.7152,20.5356,80],
+[9,D,4,"dink",2,0,null,0.85,19.016,50],[9,D,4,"drive",2,0,null,0.726,18.83,50],[9,D,4,"lob",1,0,null,0.194,60,100],[9,D,4,"smash",2,0,null,0.0185,18.924,50],
+[9,D,5,"dink",2,0,null,0.8805,26.235,50],[9,D,5,"drive",4,0,null,0.80275,15.9575,50],[9,D,5,"drop",1,0,null,0.73,16.063,100],
+[9,D,6,"drive",1,0,null,0.724,14.403,100],[9,D,6,"smash",2,0,null,0.7515,37.3835,100],
+[9,D,7,"dink",4,1,null,0.75,13.7373,25],[9,D,7,"drive",2,0,null,0.6855,27.6295,0],
+[9,D,8,"drive",1,0,null,0.841,12.468,100],[9,D,8,"",1,0,null,null,null,100],
+[9,D,9,"dink",1,0,null,0.7,15.842,100],[9,D,9,"drive",2,0,null,0.9155,19.8305,50],
+[9,D,10,"drive",1,1,null,0.841,19.441,100],[9,D,10,"smash",1,0,null,0.295,25.903,100],
+[9,D,11,"dink",1,0,null,0.817,13.291,100],[9,D,11,"drive",1,1,null,0.787,17.928,100],[9,D,11,"smash",1,1,0,0,21.824,0],
+[9,D,13,"dink",1,0,null,1,12.781,100],[9,D,16,"drop",1,0,null,0.701,13.675,100],[9,D,18,"dink",1,0,null,0.7,14.356,100],
+[9,D,19,"drive",1,0,null,0.848,21.352,100],[9,D,21,"smash",1,0,null,0.399,27.984,100],
+[9,L,1,"",14,0,null,0.8203,29.0589,61.54],[9,L,2,"",6,0,null,0.8073,24.3192,66.67],
+[9,L,3,"drive",6,1,null,0.781,28.8523,50],[9,L,3,"drop",1,0,null,0.77,22.945,0],
+[9,L,4,"dink",1,0,null,0.7,6.242,100],[9,L,4,"drop",1,0,null,0.7,15.828,100],[9,L,4,"smash",3,1,null,0.0717,18.794,66.67],
+[9,L,5,"dink",1,0,null,0.7,15.722,0],[9,L,5,"drive",2,1,null,0.821,45.0115,50],
+[9,L,6,"dink",3,1,null,0.4937,26.7883,33.33],[9,L,6,"drive",1,0,null,0.82,19.124,0],[9,L,6,"smash",1,0,null,0,13.293,100],
+[9,L,7,"dink",2,0,null,0.85,33.3755,100],
+[9,L,8,"dink",1,0,null,1,5,100],[9,L,8,"smash",1,1,null,0,41.018,100],
+[9,L,9,"dink",1,0,null,1,20.479,100],[9,L,9,"drive",1,1,null,0.868,21.292,0],
+[9,L,10,"drive",1,0,null,0.772,26.478,100],[9,L,12,"drive",2,0,null,0.4765,25.3775,100],
+[9,L,14,"dink",1,0,null,1,33.469,100],[9,L,15,"dink",1,0,null,0.773,47.487,100],[9,L,17,"smash",1,0,null,0,19.681,100],
+
+[10,D,1,"",10,1,null,0.6677,31.7208,22.22],[10,D,2,"",9,1,null,0.7013,26.983,55.56],
+[10,D,3,"drive",5,2,null,0.897,28.9504,20],[10,D,3,"drop",9,1,1,0.776,22.4783,44.44],
+[10,D,4,"dink",4,0,null,0.8355,14.9038,75],[10,D,4,"drive",4,0,null,0.8073,23.2888,50],[10,D,4,"drop",1,0,null,1,22.229,0],[10,D,4,"smash",1,0,null,0.482,29.644,0],
+[10,D,5,"dink",2,0,null,1,16.1105,50],[10,D,5,"drive",4,0,null,0.776,23.651,75],[10,D,5,"drop",6,3,null,0.4505,13.5928,16.67],[10,D,5,"",1,0,null,null,null,100],
+[10,D,6,"dink",2,0,null,0.7,14.9265,50],[10,D,6,"drive",3,2,0,0.5953,21.7893,33.33],[10,D,6,"smash",2,0,null,1,43.4175,50],
+[10,D,7,"dink",3,0,null,0.9217,13.479,0],[10,D,7,"drive",1,1,null,0.889,8.381,100],
+[10,D,8,"dink",2,0,null,0.9225,15.361,50],[10,D,8,"smash",1,0,null,0,19.258,100],
+[10,D,9,"dink",1,1,0,0,48.25,0],[10,D,10,"dink",1,0,null,1,14.028,0],
+[10,D,12,"dink",1,0,null,0.627,30.62,0],[10,D,12,"drive",1,0,null,0.763,21.164,100],[10,D,14,"drive",1,0,null,0.753,26.416,100],
+[10,L,1,"",16,0,null,0.7759,29.0263,62.5],[10,L,2,"",11,1,1,0.6932,29.8246,54.55],
+[10,L,3,"drive",4,2,1,0.634,35.581,50],[10,L,3,"drop",5,0,null,0.6748,26.0414,80],[10,L,3,"smash",1,0,null,1,54.712,100],
+[10,L,4,"drive",3,1,null,0.7787,19.2997,33.33],[10,L,4,"smash",2,0,null,0.238,20.2365,50],
+[10,L,5,"dink",1,0,null,1,15.912,100],[10,L,5,"drive",2,0,null,0.398,10.9445,50],
+[10,L,6,"dink",3,0,null,0.8,16.4577,100],[10,L,6,"drive",1,0,null,0.39,14.721,100],
+[10,L,7,"dink",1,0,null,0.785,12.118,0],[10,L,7,"drive",2,1,null,0.932,18.327,100],
+[10,L,8,"drive",1,0,null,0.9,22.013,100],[10,L,8,"",1,0,null,null,null,100],
+[10,L,9,"dink",3,2,0,0.1997,18.3257,33.33],[10,L,9,"smash",1,0,null,0,12.661,100],
+[10,L,10,"dink",1,0,null,0,22.785,100],[10,L,10,"drive",2,0,null,0.788,21.404,100],
+[10,L,11,"dink",1,0,null,0.527,15.564,100],[10,L,12,"smash",1,0,null,0.007,20.136,100],[10,L,16,"drive",1,0,null,0.781,11.943,100],
+
+[11,D,1,"",15,0,null,0.7617,31.6557,71.43],[11,D,2,"",8,0,null,0.808,25.8865,50],
+[11,D,3,"drive",5,2,null,0.7898,26.4968,60],[11,D,3,"drop",12,2,1,0.6917,19.922,58.33],
+[11,D,4,"dink",6,2,0,0.5773,15.8382,50],[11,D,4,"drive",2,0,null,0.827,19.1485,100],[11,D,4,"smash",3,0,null,0.6667,34.8947,100],
+[11,D,5,"dink",3,0,null,0.9,16.007,66.67],[11,D,5,"drive",5,0,null,0.7954,14.7394,80],[11,D,5,"drop",1,0,null,0.779,18.457,100],[11,D,5,"smash",1,0,null,0.203,24.065,100],
+[11,D,6,"dink",3,0,null,0.8223,17.0213,33.33],[11,D,6,"drive",2,0,null,0.8365,20.956,100],[11,D,6,"smash",2,0,null,0.944,40.6675,100],
+[11,D,7,"dink",2,0,null,0.8615,15.043,50],[11,D,7,"drive",1,0,null,0.748,12.395,0],[11,D,7,"smash",3,0,null,0.5417,30.83,100],
+[11,D,8,"dink",2,1,0,0.5,37.337,0],[11,D,8,"drive",3,1,null,0.6923,15.3297,100],[11,D,8,"smash",1,0,null,0.113,22.27,100],
+[11,D,9,"drive",1,1,null,0.815,26.669,0],[11,D,9,"smash",2,1,0,0.415,30.7945,50],
+[11,D,12,"dink",1,0,null,0.841,15.915,0],[11,D,12,"smash",1,0,null,1,45.619,100],
+[11,L,1,"",7,0,null,0.7717,29.5829,16.67],[11,L,2,"",9,1,1,0.6487,25.3033,66.67],
+[11,L,3,"drive",2,0,null,0.7055,22.87,50],
+[11,L,4,"dink",1,0,null,0.827,22.084,100],[11,L,4,"drive",2,0,null,0.761,18.7755,50],[11,L,4,"drop",1,1,0,0,14.663,0],
+[11,L,5,"dink",1,0,null,0.644,19.816,100],[11,L,5,"drive",3,1,null,0.783,26.449,33.33],
+[11,L,6,"dink",1,0,null,0.834,12.461,100],[11,L,6,"drive",1,0,null,0.94,26.227,100],
+[11,L,7,"dink",1,1,0,0,11.864,0],[11,L,7,"drive",3,1,null,0.7963,21.1007,66.67],
+[11,L,9,"dink",1,1,0,0,32.759,0],[11,L,10,"drive",2,0,null,0.838,30.394,50],[11,L,10,"smash",1,0,null,0.057,21.135,100],[11,L,11,"drive",1,0,null,0.908,30.706,0],
+
+[12,D,1,"",8,0,null,0.7597,34.1823,75],[12,D,2,"",4,2,2,0.4015,26.8318,25],
+[12,D,3,"dink",1,0,null,1,16.214,0],[12,D,3,"drive",4,2,1,0.6408,37.1878,50],[12,D,3,"drop",4,0,null,0.7115,24.5298,75],
+[12,D,4,"dink",1,1,null,0,18.968,0],
+[12,D,5,"dink",3,0,null,0.7717,15.5363,66.67],[12,D,5,"drive",1,0,null,0.889,27.053,100],
+[12,D,6,"dink",2,1,null,0.5,11.0165,100],
+[12,D,7,"dink",1,0,null,0.7,15.548,100],[12,D,7,"drive",3,1,0,0.5447,22.498,66.67],[12,D,7,"smash",1,0,null,0.569,31.384,0],
+[12,D,9,"dink",2,1,null,0.5,12.1925,100],[12,D,9,"drive",1,0,null,0.863,29.936,100],
+[12,D,11,"dink",1,0,null,0.865,51.633,100],[12,D,11,"drive",1,1,0,0,20.592,0],[12,D,13,"drive",1,0,null,0.893,21.234,100],
+[12,L,1,"",8,0,null,0.7685,30.2008,75],[12,L,2,"",4,1,0,0.5518,22.501,75],
+[12,L,3,"dink",1,0,null,0.734,20.2,100],[12,L,3,"drive",1,0,null,0.844,22.549,100],[12,L,3,"drop",1,0,null,0.801,24.178,100],
+[12,L,4,"drive",4,0,null,0.7763,20.3678,100],
+[12,L,5,"drive",2,1,null,0.8745,24.21,100],[12,L,5,"drop",2,1,0,0.434,35.2595,0],
+[12,L,7,"dink",1,0,null,0.681,13.98,100],[12,L,8,"drive",1,0,null,0.799,6.9,100],[12,L,9,"drive",1,0,null,0.834,23.621,0],
+
+[13,D,1,"",8,0,null,0.7304,34.2834,50],[13,D,2,"",6,0,null,0.8292,30.86,33.33],
+[13,D,3,"drive",6,2,1,0.6602,21.644,33.33],[13,D,3,"drop",4,1,1,0.5943,18.3213,50],
+[13,D,4,"dink",2,0,null,0.806,18.28,50],[13,D,4,"drive",1,0,null,0.756,19.782,100],[13,D,4,"smash",3,1,null,0.4243,28.4883,66.67],
+[13,D,5,"dink",2,0,null,0.85,17.447,50],[13,D,5,"drive",1,1,null,0.744,20.058,0],[13,D,5,"drop",2,1,null,0.296,15.9195,50],
+[13,D,6,"dink",3,2,0,0.251,19.6583,33.33],[13,D,6,"smash",1,0,null,0.915,38.307,100],
+[13,D,7,"dink",1,0,null,0.663,12.127,100],[13,D,7,"drop",1,1,0,0,19.29,0],
+[13,D,10,"smash",1,0,null,0.628,32.551,100],[13,D,11,"drive",1,0,null,0.914,18.915,100],[13,D,13,"drive",1,0,null,0.566,6.554,100],
+[13,L,1,"",6,0,null,0.8443,30.6043,16.67],[13,L,2,"",9,1,1,0.6462,25.7913,33.33],
+[13,L,3,"drive",1,0,null,0.909,31.708,0],[13,L,3,"drop",3,1,1,0.4447,25.364,33.33],
+[13,L,4,"dink",1,1,null,0,16.206,0],[13,L,4,"drive",2,1,0,0.396,24.963,0],
+[13,L,5,"dink",4,0,null,0.8555,18.1368,50],[13,L,5,"drive",1,0,null,0.791,22.483,0],
+[13,L,6,"drive",1,0,null,0.799,19.949,0],
+[13,L,7,"dink",1,0,null,0.7,14.248,100],[13,L,8,"drive",1,0,null,0.75,23.253,100],[13,L,8,"drop",1,1,0,0,14.105,0],
+[13,L,9,"dink",2,0,null,0.6285,15.5195,100],[13,L,11,"smash",1,0,null,0.223,24.461,100],
+
+[14,D,1,"",9,2,1,0.6374,31.9198,37.5],[14,D,2,"",10,0,null,0.7992,26.2861,50],
+[14,D,3,"drive",2,1,null,0.8275,32.4895,0],[14,D,3,"drop",7,1,1,0.7283,22.0599,57.14],
+[14,D,4,"drive",5,0,null,0.7668,19.708,60],[14,D,4,"drop",2,1,0,0.35,18.284,50],
+[14,D,5,"dink",3,0,null,0.8603,28.4377,33.33],[14,D,5,"drive",1,1,0,0,23.039,0],[14,D,5,"drop",3,0,null,0.9,17.8217,66.67],
+[14,D,6,"dink",6,1,0,0.6717,16.0968,50],[14,D,6,"drive",2,0,null,0.826,18.962,0],
+[14,D,7,"dink",3,0,null,0.8,15.478,33.33],[14,D,7,"drive",1,0,null,0.8,24.673,100],
+[14,D,8,"dink",4,0,null,0.85,14.8343,50],[14,D,8,"drive",2,0,null,0.844,21.377,50],
+[14,D,9,"dink",1,0,null,0.7,15.538,0],[14,D,9,"drive",3,2,0,0.3177,25.5937,33.33],
+[14,D,10,"dink",2,0,null,0.93,13.279,50],[14,D,10,"drive",2,1,0,0.3855,18.7265,50],
+[14,D,11,"dink",1,0,null,0.707,15.133,0],[14,D,11,"drive",1,0,null,0.855,28.108,0],[14,D,11,"smash",2,0,null,0.7,34.002,50],
+[14,D,12,"dink",2,0,null,0.788,14.2415,50],[14,D,12,"drive",1,0,null,0.635,15.05,100],
+[14,D,13,"dink",1,0,null,0.817,12.534,100],[14,D,13,"drive",1,1,null,0,26.634,0],[14,D,13,"smash",1,0,null,0.094,21.878,0],
+[14,D,14,"dink",1,0,null,1,10.2,100],[14,D,14,"drive",3,1,0,0.5537,25.6117,66.67],
+[14,D,15,"drive",1,0,null,0.849,26.378,0],[14,D,16,"drive",1,0,null,0.777,21.394,100],[14,D,16,"smash",1,0,null,0.539,30.772,100],[14,D,17,"smash",1,0,null,1,48.574,0],
+[14,L,1,"",8,0,null,0.8035,30.0371,37.5],[14,L,2,"",5,1,1,0.6712,24.186,20],
+[14,L,3,"drive",2,0,null,0.734,27.3345,0],[14,L,3,"drop",2,0,null,0.7665,25.9905,0],
+[14,L,4,"drive",4,1,null,0.5395,18.506,0],[14,L,4,"smash",1,0,null,0.051,21.015,100],
+[14,L,5,"dink",2,0,null,0.85,18.1085,0],[14,L,5,"drive",1,0,null,0.84,19.736,100],[14,L,5,"drop",1,0,null,0.765,20.394,0],
+[14,L,6,"drive",1,0,null,0.771,20.305,100],
+[14,L,7,"dink",2,0,null,0.85,13.975,0],[14,L,7,"drive",2,0,null,0.716,17.9155,0],
+[14,L,8,"drive",1,0,null,0.827,23.945,100],
+[14,L,9,"dink",1,0,null,1,16.243,0],[14,L,9,"drive",2,1,null,0.8285,19.3145,50],
+[14,L,10,"dink",2,0,null,0.907,16.8115,50],[14,L,10,"drive",1,0,null,0.823,24.186,100],
+[14,L,11,"dink",1,0,null,0.819,14.943,100],[14,L,12,"dink",3,0,null,0.685,16.9307,66.67],
+[14,L,13,"drive",1,0,null,0.706,17.391,0],[14,L,14,"dink",1,0,null,1,15.104,0],[14,L,14,"drive",1,0,null,0.875,22.372,100],
+[14,L,15,"drive",2,1,null,0.3965,18.738,50],[14,L,16,"dink",1,1,1,0,19.217,0],[14,L,17,"dink",1,0,null,0.822,15.126,0],
+
+[15,D,1,"",5,0,null,0.8166,31.9264,0],[15,D,2,"",10,1,1,0.6819,25.3687,50],
+[15,D,3,"drive",3,0,null,0.8163,36.0073,0],[15,D,3,"drop",7,1,1,0.6829,21.67,42.86],
+[15,D,4,"dink",2,0,null,0.8295,18.709,50],[15,D,4,"drive",7,1,null,0.737,18.8063,28.57],[15,D,4,"smash",3,1,0,0.3417,30.6893,66.67],
+[15,D,5,"dink",1,0,null,1,17.919,100],[15,D,5,"drive",1,0,null,0.692,11.222,0],
+[15,D,6,"dink",1,1,0,0,15.365,0],[15,D,6,"drive",2,0,null,0.7815,19.442,50],
+[15,D,7,"dink",2,0,null,0.7,16.562,50],[15,D,7,"drive",2,1,0,0.399,19.389,0],[15,D,7,"drop",1,0,null,0.732,16.493,100],
+[15,D,8,"dink",2,0,null,0.733,15.91,100],[15,D,8,"drive",3,0,null,0.861,21.2363,33.33],
+[15,D,9,"drive",3,0,null,0.8823,21.025,33.33],
+[15,D,10,"dink",2,0,null,0.7335,15.177,50],[15,D,10,"smash",1,0,null,0.437,28.734,0],
+[15,D,11,"dink",3,0,null,0.7427,14.6067,33.33],
+[15,D,12,"dink",1,0,null,0.7,15.642,0],[15,D,12,"drive",1,0,null,0.801,20.452,0],[15,D,12,"smash",1,0,null,1,40.451,0],
+[15,D,13,"dink",1,0,null,0.7,14.387,0],[15,D,13,"lob",1,0,null,0.643,28.784,0],
+[15,D,14,"dink",2,0,null,0.7755,14.4615,50],[15,D,14,"drive",2,0,null,0.7635,23.8485,50],
+[15,D,15,"dink",3,0,null,0.8,13.2643,0],
+[15,D,16,"dink",1,0,null,0.827,16.928,100],[15,D,16,"drive",1,0,null,0.789,12.355,0],
+[15,D,17,"dink",1,0,null,0.7,15.027,0],[15,D,17,"drive",2,0,null,0.739,16.448,50],
+[15,D,18,"dink",1,1,null,0,7.466,0],[15,D,18,"drive",1,0,null,0.815,32.66,100],
+[15,D,19,"dink",2,1,0,0.5,27.698,50],[15,D,19,"drop",1,0,null,0.7,24.202,0],[15,D,21,"drop",1,0,null,0.7,17.627,0],
+[15,L,1,"",12,0,null,0.802,29.7697,41.67],[15,L,2,"",10,2,1,0.6629,29.3128,44.44],
+[15,L,3,"drive",2,0,null,0.6245,24.6955,50],[15,L,3,"drop",3,0,null,0.749,23.0867,0],
+[15,L,4,"dink",1,0,null,0.7,18.692,100],[15,L,4,"drive",2,0,null,0.7335,18.857,100],[15,L,4,"smash",1,0,null,0.465,29.3,0],
+[15,L,5,"dink",4,0,null,0.7983,17.9023,0],[15,L,5,"drive",3,0,null,0.638,15.6717,66.67],[15,L,5,"drop",3,0,null,0.8287,20.266,0],
+[15,L,6,"dink",3,0,null,0.7623,16.9223,100],[15,L,6,"drive",2,0,null,0.796,18.8485,0],[15,L,6,"drop",1,1,0,0,13.948,0],[15,L,6,"",1,0,null,null,null,0],
+[15,L,7,"dink",4,0,null,0.8798,13.9485,25],[15,L,7,"drive",2,0,null,0.819,20.2565,0],[15,L,7,"drop",1,1,null,0,12.809,0],
+[15,L,8,"dink",3,1,0,0.4587,16.32,33.33],
+[15,L,9,"dink",4,0,null,0.8338,16.5853,25],[15,L,10,"dink",2,0,null,0.938,15.5485,50],
+[15,L,11,"dink",1,0,null,0.7,16.296,0],[15,L,11,"drive",1,0,null,0.772,10.894,0],
+[15,L,12,"dink",1,0,null,0.683,15.644,100],[15,L,12,"drive",1,0,null,0.977,60,100],
+[15,L,13,"dink",3,0,null,0.8897,13.9343,33.33],[15,L,14,"dink",1,0,null,0.773,17.045,0],[15,L,15,"dink",1,0,null,0.609,16.192,100],
+[15,L,16,"dink",1,1,null,0,11.822,0],[15,L,16,"drive",1,1,null,0.849,16.085,0],
+[15,L,17,"dink",1,0,null,0.637,16.248,0],[15,L,18,"drive",1,1,null,0,21.545,0],[15,L,19,"dink",1,1,0,0,17.522,0],
+[15,L,23,"dink",1,0,null,0.7,15.52,0],[15,L,25,"dink",1,1,null,0,13.816,0],
+
+[16,D,1,"",5,0,null,0.7522,34.4846,20],[16,D,2,"",10,0,null,0.7509,24.5939,40],
+[16,D,3,"drive",1,1,1,0,35.525,0],[16,D,3,"drop",4,1,1,0.59,19.5328,0],
+[16,D,4,"dink",6,2,0,0.5702,16.321,16.67],[16,D,4,"drive",2,0,null,0.8015,18.2555,100],[16,D,4,"smash",1,1,null,0,12.44,0],
+[16,D,5,"dink",1,0,null,1,14.064,0],[16,D,5,"drop",1,1,0,0,13.297,0],
+[16,D,6,"dink",3,0,null,0.6993,14.4,33.33],[16,D,6,"drive",2,0,null,0.8225,17.9445,50],
+[16,D,7,"dink",1,0,null,1,15.355,0],[16,D,7,"drive",2,1,null,0.819,14.0145,0],[16,D,7,"drop",1,1,null,0,13.274,0],
+[16,D,8,"dink",2,0,null,0.7435,9.527,50],[16,D,8,"drive",1,0,null,0.766,16.502,0],[16,D,8,"smash",1,1,null,0,21.689,100],
+[16,D,9,"dink",2,0,null,0.7705,14.895,0],[16,D,9,"smash",1,1,0,0,14.851,0],
+[16,D,10,"dink",1,0,null,0.841,15.589,0],[16,D,10,"drive",1,0,null,0.888,25.679,100],
+[16,D,11,"dink",1,0,null,0.7,15.923,0],[16,D,11,"smash",1,0,null,0.107,22.138,0],
+[16,D,13,"drive",1,1,null,0.922,18.203,0],
+[16,D,15,"dink",1,0,null,0.697,14.289,0],[16,D,15,"drive",1,0,null,0.637,13.872,0],
+[16,D,17,"drive",1,0,null,0.731,13.209,0],[16,D,19,"drive",1,0,null,0.728,17.387,0],[16,D,21,"dink",1,0,null,1,22.651,0],
+[16,L,1,"",4,0,null,0.8395,30.6105,0],[16,L,2,"",8,0,null,0.7444,25.2044,37.5],
+[16,L,3,"drive",1,0,null,0.792,21.405,0],[16,L,3,"drop",1,0,null,1,21.524,0],
+[16,L,4,"dink",6,0,null,0.6873,17.3322,33.33],[16,L,4,"drive",2,1,0,0.435,18.2205,50],
+[16,L,5,"dink",2,0,null,0.824,16.6785,0],[16,L,5,"drive",1,0,null,0.648,25.402,0],
+[16,L,6,"dink",3,1,0,0.5667,15.5557,66.67],[16,L,6,"drive",2,1,null,0.8695,15.9305,0],
+[16,L,8,"dink",1,0,null,0.759,11.034,0],[16,L,8,"drive",1,0,null,0.811,22.832,100],[16,L,8,"drop",1,1,null,0,28.931,0],
+[16,L,12,"dink",2,1,null,0.35,14.0505,50],[16,L,13,"dink",1,0,null,0.719,15.581,0],
+[16,L,14,"dink",1,0,null,1,19.641,100],[16,L,16,"smash",1,1,null,0,60,100]
+    ];
+
+    var DATA = RAW.map(function(r){
+      var g = null;
+      for (var i=0;i<GAMES.length;i++){ if (GAMES[i].n===r[0]) { g = GAMES[i]; break; } }
+      return {
+        game:r[0], date:g.date, location:g.location, score:g.score, result:g.result,
+        player:r[1], shotNum:r[2], type:r[3], total:r[4], faults:r[5], unforced:r[6],
+        avgQuality:r[7], avgSpeed:r[8], winPct:r[9]
+      };
+    });
+
+    var TYPE_LABEL = { dink:"Dink", drive:"Drive", drop:"Drop", smash:"Smash", lob:"Lob", atp:"ATP", "":"Serve/Return" };
+
+    function shotNumBucket(n){
+      if(n===1) return "serve";
+      if(n===2) return "return";
+      if(n===3) return "3";
+      if(n===4) return "4";
+      if(n===5) return "5";
+      if(n>=6 && n<=8) return "transition";
+      return "extended";
+    }
+
+    // ---------- Populate game filter ----------
+    var gameSelect = document.getElementById('dashGame');
+    GAMES.forEach(function(g){
+      var opt = document.createElement('option');
+      opt.value = g.n;
+      opt.textContent = "Game " + g.n + " \u00b7 " + g.score + " " + g.result + " \u00b7 " + g.location;
+      gameSelect.appendChild(opt);
+    });
+
+    function getFilters(){
+      return {
+        player: document.getElementById('dashPlayer').value,
+        game: document.getElementById('dashGame').value,
+        dateStart: document.getElementById('dashDateStart').value,
+        dateEnd: document.getElementById('dashDateEnd').value,
+        location: document.getElementById('dashLocation').value,
+        type: document.getElementById('dashType').value,
+        shotnum: document.getElementById('dashShotNum').value,
+        result: document.getElementById('dashResult').value
+      };
+    }
+
+    function filterData(){
+      var f = getFilters();
+      return DATA.filter(function(d){
+        if(f.player !== 'all' && d.player !== f.player) return false;
+        if(f.game !== 'all' && String(d.game) !== f.game) return false;
+        if(f.dateStart && d.date < f.dateStart) return false;
+        if(f.dateEnd && d.date > f.dateEnd) return false;
+        if(f.location !== 'all' && d.location !== f.location) return false;
+        if(f.type !== 'all' && d.type !== f.type) return false;
+        if(f.shotnum !== 'all' && shotNumBucket(d.shotNum) !== f.shotnum) return false;
+        if(f.result !== 'all' && d.result !== f.result) return false;
+        return true;
+      });
+    }
+
+    function weightedAvg(rows, key, weightKey){
+      var num=0, den=0;
+      rows.forEach(function(r){
+        if(r[key]===null || r[key]===undefined) return;
+        num += r[key]*r[weightKey]; den += r[weightKey];
+      });
+      return den>0 ? num/den : null;
+    }
+    function fmtPct(v){ return v===null||isNaN(v) ? '\u2014' : v.toFixed(1)+'%'; }
+    function fmtNum(v,d){ d = d||2; return v===null||isNaN(v) ? '\u2014' : v.toFixed(d); }
+    function winClass(v){ if(v===null) return ''; if(v>=50) return 'win-good'; if(v>=30) return 'win-mid'; return 'win-low'; }
+
+    function renderSummary(rows){
+      var totalShots = rows.reduce(function(a,r){return a+r.total;},0);
+      var totalFaults = rows.reduce(function(a,r){return a+r.faults;},0);
+      var successPct = totalShots>0 ? 100*(totalShots-totalFaults)/totalShots : null;
+      var avgQuality = weightedAvg(rows,'avgQuality','total');
+      var avgSpeed = weightedAvg(rows,'avgSpeed','total');
+      var winPct = weightedAvg(rows,'winPct','total');
+      var cards = [
+        {label:'Total shots', value: totalShots.toLocaleString()},
+        {label:'Success rate', value: fmtPct(successPct)},
+        {label:'Avg quality', value: avgQuality!==null? fmtNum(avgQuality,2) : '\u2014'},
+        {label:'Avg speed', value: avgSpeed!==null? fmtNum(avgSpeed,1)+' mph':'\u2014'},
+        {label:'Rally win %', value: fmtPct(winPct)}
+      ];
+      document.getElementById('dashSummary').innerHTML = cards.map(function(c){
+        return '<div class="dash-stat"><span class="stat-label">'+c.label+'</span><span class="stat-value mono">'+c.value+'</span></div>';
+      }).join('');
+    }
+
+    function renderTypeTable(rows){
+      var f = getFilters();
+      var byType = {};
+      rows.forEach(function(r){
+        var groupKey = f.player==='all' ? r.type+'|'+r.player : r.type;
+        if(!byType[groupKey]) byType[groupKey] = {type:r.type, player:r.player, total:0, faults:0, qSum:0, sSum:0, wSum:0};
+        var b = byType[groupKey];
+        b.total += r.total; b.faults += r.faults;
+        if(r.avgQuality!==null) b.qSum += r.avgQuality*r.total;
+        if(r.avgSpeed!==null) b.sSum += r.avgSpeed*r.total;
+        if(r.winPct!==null) b.wSum += r.winPct*r.total;
+      });
+      var list = Object.keys(byType).map(function(k){
+        var b = byType[k];
+        return {
+          type:b.type, player:b.player, total:b.total, faults:b.faults,
+          success: b.total>0 ? 100*(b.total-b.faults)/b.total : null,
+          quality: b.total>0 ? b.qSum/b.total : null,
+          speed: b.total>0 ? b.sSum/b.total : null,
+          win: b.total>0 ? b.wSum/b.total : null
+        };
+      });
+      list.sort(function(a,b){ return b.total-a.total; });
+
+      var shotNumLabel = {all:'', serve:' \u00b7 Serve', 'return':' \u00b7 Return', '3':' \u00b7 3rd shot', '4':' \u00b7 4th shot', '5':' \u00b7 5th shot', transition:' \u00b7 Transition (6\u20138)', extended:' \u00b7 Extended rally (9+)'}[f.shotnum];
+      document.getElementById('dashTableTitle').textContent = (f.player==='all' ? 'Breakdown by shot type \u00b7 both players' : 'Breakdown by shot type \u00b7 '+(f.player==='Dave Roberts'?'Dave':'Louise')) + shotNumLabel;
+
+      var el = document.getElementById('dashTypeTable');
+      if(list.length===0){ el.outerHTML = '<div class="dash-empty" id="dashTypeTable">No shots match the current filters.</div>'; return; }
+
+      var head = '<thead><tr><th>Shot type</th><th>Shots</th><th>Faults</th><th>Success%</th><th>Avg quality</th><th>Avg mph</th><th>Win%</th></tr></thead>';
+      var body = '<tbody>' + list.map(function(r){
+        var label = (TYPE_LABEL[r.type]||r.type) + (f.player==='all' ? ' \u2013 ' + (r.player.toLowerCase().indexOf('louise')>-1?'Louise':'Dave') : '');
+        return '<tr><td>'+label+'</td><td>'+r.total+'</td><td>'+r.faults+'</td><td>'+fmtPct(r.success)+'</td><td>'+fmtNum(r.quality,2)+'</td><td>'+fmtNum(r.speed,1)+'</td><td class="'+winClass(r.win)+'">'+fmtPct(r.win)+'</td></tr>';
+      }).join('') + '</tbody>';
+      el.innerHTML = head+body;
+    }
+
+    function renderGameTable(rows){
+      var byGame = {};
+      rows.forEach(function(r){
+        if(!byGame[r.game]) byGame[r.game] = {game:r.game, score:r.score, result:r.result, location:r.location, date:r.date, total:0, faults:0, qSum:0, wSum:0};
+        var b = byGame[r.game];
+        b.total += r.total; b.faults += r.faults;
+        if(r.avgQuality!==null) b.qSum += r.avgQuality*r.total;
+        if(r.winPct!==null) b.wSum += r.winPct*r.total;
+      });
+      var list = Object.keys(byGame).map(function(k){return byGame[k];}).sort(function(a,b){return a.game-b.game;});
+      var el = document.getElementById('dashGameTable');
+      if(list.length===0){ el.outerHTML = '<div class="dash-empty" id="dashGameTable">No games match the current filters.</div>'; return; }
+
+      var head = '<thead><tr><th>Game</th><th>Date</th><th>Location</th><th>Score</th><th>Shots</th><th>Success%</th><th>Avg quality</th><th>Win%</th></tr></thead>';
+      var body = '<tbody>' + list.map(function(g){
+        var success = g.total>0 ? 100*(g.total-g.faults)/g.total : null;
+        var win = g.total>0 ? g.wSum/g.total : null;
+        return '<tr><td>'+g.game+'</td><td>'+g.date+'</td><td>'+g.location+'</td><td>'+g.score+' '+g.result+'</td><td>'+g.total+'</td><td>'+fmtPct(success)+'</td><td>'+fmtNum(g.qSum/g.total,2)+'</td><td class="'+winClass(win)+'">'+fmtPct(win)+'</td></tr>';
+      }).join('') + '</tbody>';
+      el.innerHTML = head+body;
+    }
+
+    function renderAll(){
+      var rows = filterData();
+      renderSummary(rows);
+      renderTypeTable(rows);
+      renderGameTable(rows);
+    }
+
+    ['dashPlayer','dashGame','dashDateStart','dashDateEnd','dashLocation','dashType','dashShotNum','dashResult'].forEach(function(id){
+      document.getElementById(id).addEventListener('change', renderAll);
+    });
+    document.getElementById('dashReset').addEventListener('click', function(){
+      ['dashPlayer','dashGame','dashLocation','dashType','dashShotNum','dashResult'].forEach(function(id){
+        document.getElementById(id).value = 'all';
+      });
+      document.getElementById('dashDateStart').value = '';
+      document.getElementById('dashDateEnd').value = '';
+      renderAll();
+    });
+
+    renderAll();
+  })();
+  </script>
 
   <section class="section" id="partner">
     <div class="section-head">
