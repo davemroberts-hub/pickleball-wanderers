@@ -2,57 +2,54 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://pickleballwanderers.com/</loc>
-    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://pickleballwanderers.com/guides/boston.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://pickleballwanderers.com/guides/seattle.html</loc>
-    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://pickleballwanderers.com/guides/vancouver.html</loc>
-    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://pickleballwanderers.com/guides/edmonton.html</loc>
-    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://pickleballwanderers.com/guides/montreal.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://pickleballwanderers.com/guides/boston.html</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://pickleballwanderers.com/guides/algarve.html</loc>
-    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://pickleballwanderers.com/guides/burlington.html</loc>
-    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://pickleballwanderers.com/guides/danang.html</loc>
-    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pickleballwanderers.com/guides/algarve.html</loc>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://pickleballwanderers.com/guides/wrexham.html</loc>
-    <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://pickleballwanderers.com/guides/leeds.html</loc>
-    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pickleballwanderers.com/guides/rota.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pickleballwanderers.com/guides/malaga.html</loc>
     <priority>0.8</priority>
   </url>
 </urlset>
