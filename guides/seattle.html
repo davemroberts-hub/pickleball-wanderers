@@ -73,6 +73,33 @@
   }
 }
 </script>
+
+<!-- NEW: Breadcrumb schema — update the itemListElement for each guide (name + item URL on the last entry) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://pickleballwanderers.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pickleballwanderers.com/index.html#guides"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Seattle"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -85,8 +112,8 @@
         <div class="tag">NO FIXED COURT · SINCE 2023</div>
       </div>
       <nav class="nav-links">
-        <a href="../index.html#route">The route</a>
         <a href="../index.html#guides">Guides</a>
+        <a href="../index.html#route">The route</a>
         <a href="../index.html#film">Film &amp; analysis</a>
         <a href="../index.html#analysis">The data</a>
         <a href="../index.html#partner">Partner with us</a>
@@ -95,13 +122,22 @@
       <button class="nav-toggle" onclick="document.getElementById('mobileMenu').classList.toggle('open')" aria-label="Toggle menu">☰</button>
     </div>
     <nav class="mobile-menu" id="mobileMenu">
-      <a href="../index.html#route">The route</a>
       <a href="../index.html#guides">Guides</a>
+      <a href="../index.html#route">The route</a>
       <a href="../index.html#film">Film &amp; analysis</a>
       <a href="../index.html#analysis">The data</a>
       <a href="../index.html#partner">Partner with us</a>
     </nav>
   </header>
+
+  <!-- NEW: visible breadcrumb trail (matches the BreadcrumbList schema above) -->
+  <nav aria-label="Breadcrumb" style="max-width:960px; margin:18px auto 0; padding:0 20px; font-family:'Space Grotesk',sans-serif; font-size:13px; color:var(--ink, #333); opacity:0.7;">
+    <a href="../index.html" style="color:inherit; text-decoration:none;">Home</a>
+    <span style="margin:0 6px;">/</span>
+    <a href="../index.html#guides" style="color:inherit; text-decoration:none;">Guides</a>
+    <span style="margin:0 6px;">/</span>
+    <span>Seattle</span>
+  </nav>
 
   <section class="guide-hero">
     <a class="breadcrumb" href="../index.html#route">← Back to the route</a>
@@ -109,6 +145,8 @@
     <span class="country-tag">USA</span>
     <h2>Where to Play Pickleball in Seattle</h2>
     <p class="summary">Seattle was our final stop on our latest pickleball travels through North America. We weren't interested in simply finding courts on a map — we wanted to know where a travelling player can actually get good games. We played at Sideout Tsunami in South Seattle and analysed our games with PBVision to see how the experience, and our own play, really measured up.</p>
+    <!-- NEW: last-checked / last-played dates — update "Guide checked" whenever re-verified; "Last played" only changes if you play here again -->
+    <p class="checked-date" style="font-family:'IBM Plex Mono',monospace; font-size:12px; opacity:0.65; margin-top:6px;">Guide checked: September 2026 · Last played: September 2026</p>
     <img class="hero-img" src="../images/seattle-sideout-tsunami.jpg" alt="Dave and Louise at Sideout Tsunami, South Seattle">
   </section>
 
@@ -119,7 +157,7 @@
         <h3>Sideout Tsunami — South Seattle</h3>
         <span class="venue-meta">South Seattle · Indoor · 26 courts</span>
       </div>
-      <p>Sideout Tsunami is a fantastic indoor facility which opened in 2025, with 26 indoor courts — three of them equipped with cameras. It was the venue for PPA Seattle in August 2026, and the crowd here are friendly, with open play sessions that are good and competitive.</p>
+      <p>Sideout Tsunami is a fantastic indoor facility which opened in 2025, with 26 indoor courts — three of them equipped with cameras. It was the venue for PPA Seattle in August 2026, and the crowd here are friendly, with open play sessions that are good and competitive. It's a similar scale to <a href="boston.html">PickleBOS in Boston</a>, another big indoor facility on our North America route.</p>
       <p>We joined a 3.7+ advanced open play session. The level was very good and probably ranged from 3.5 to 4.5. The session was well organised and included a challenge court, and Sideout Tsunami also runs sessions at every level daily, including a dedicated 3.5–4.0 bracket, making it a great choice for players around that level too.</p>
       <p><strong>Our take:</strong> probably the best facility we have ever played at — the only real friction is booking ahead of time as an overseas visitor.</p>
       <div class="venue-facts">
@@ -221,7 +259,7 @@
           </div>
           <div class="tip">
             <h4>Film your session if you can</h4>
-            <p>Three of Sideout Tsunami's courts have cameras built in — an easy way to get your games analysed on PBVision without setting up your own equipment.</p>
+            <p>Three of Sideout Tsunami's courts have cameras built in — an easy way to get your games analysed on PBVision without setting up your own equipment, the same way we did at <a href="edmonton.html">Edmonton Sports Centre</a>.</p>
           </div>
         </div>
       </div>
@@ -229,7 +267,7 @@
 
     <div class="venue" style="border-bottom:none;">
       <h2 style="font-size:24px;">The Wanderers Take</h2>
-      <p>Seattle turned out to be one of the strongest stops on this trip. Sideout Tsunami is probably the best facility we've played at — 26 courts, a great crowd, and genuinely competitive open play at every level. The only real hurdle is booking as an overseas visitor, so sort that out ahead of time and the rest takes care of itself. If you're mapping out a wider North America trip, our <a href="vancouver.html">Vancouver guide</a> is a good next stop to compare against.</p>
+      <p>Seattle turned out to be one of the strongest stops on this trip. Sideout Tsunami is probably the best facility we've played at — 26 courts, a great crowd, and genuinely competitive open play at every level. The only real hurdle is booking as an overseas visitor, so sort that out ahead of time and the rest takes care of itself. If you're mapping out a wider North America trip, our <a href="vancouver.html">Vancouver</a>, <a href="edmonton.html">Edmonton</a> and <a href="montreal.html">Montreal</a> guides are good stops to compare against.</p>
 
       <div class="rating-card">
         <div class="rating-top">
@@ -247,13 +285,13 @@
 
     <div class="split" style="margin-top:56px;">
       <div class="col">
-        <h2>More City Guides</h2>
+        <h2>More North America Guides</h2>
         <div class="best-for-grid">
           <div class="best-for-item"><a href="boston.html"><strong>Boston</strong></a></div>
           <div class="best-for-item"><a href="vancouver.html"><strong>Vancouver</strong></a></div>
           <div class="best-for-item"><a href="edmonton.html"><strong>Edmonton</strong></a></div>
           <div class="best-for-item"><a href="montreal.html"><strong>Montreal</strong></a></div>
-          <div class="best-for-item"><a href="algarve.html"><strong>Algarve</strong></a></div>
+          <div class="best-for-item"><a href="burlington.html"><strong>Burlington, VT</strong></a></div>
         </div>
       </div>
     </div>
