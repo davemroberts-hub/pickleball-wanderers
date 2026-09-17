@@ -820,6 +820,37 @@
   max-width:60ch;
 }
 
+/* NEW: breadcrumb trail nav (Home / Guides / [City]) above the guide-hero */
+.breadcrumb-trail{
+  padding-top:18px;
+  font-family:'Space Grotesk', sans-serif;
+  font-size:13px;
+  color:var(--ink-soft);
+}
+.breadcrumb-trail a{
+  text-decoration:none;
+  border-bottom:1px solid transparent;
+  transition:border-color .15s ease;
+}
+.breadcrumb-trail a:hover{
+  color:var(--ink);
+  border-color:var(--ink);
+}
+.breadcrumb-trail .sep{
+  margin:0 6px;
+  color:var(--line);
+}
+
+/* NEW: "Guide checked / Last played" metadata line under the hero summary */
+.checked-date{
+  margin-top:10px;
+  font-family:'IBM Plex Mono', monospace;
+  font-size:12px;
+  letter-spacing:0.02em;
+  color:var(--ink-soft);
+  opacity:0.75;
+}
+
 .venue{
   padding:38px 0;
   border-bottom:1px dashed var(--line);
