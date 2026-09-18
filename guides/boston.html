@@ -73,6 +73,32 @@
   }
 }
 </script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://pickleballwanderers.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pickleballwanderers.com/index.html#guides"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Boston"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -85,8 +111,8 @@
         <div class="tag">NO FIXED COURT · SINCE 2023</div>
       </div>
       <nav class="nav-links">
-        <a href="../index.html#route">The route</a>
         <a href="../index.html#guides">Guides</a>
+        <a href="../index.html#route">The route</a>
         <a href="../index.html#film">Film &amp; analysis</a>
         <a href="../index.html#analysis">The data</a>
         <a href="../index.html#partner">Partner with us</a>
@@ -95,13 +121,17 @@
       <button class="nav-toggle" onclick="document.getElementById('mobileMenu').classList.toggle('open')" aria-label="Toggle menu">☰</button>
     </div>
     <nav class="mobile-menu" id="mobileMenu">
-      <a href="../index.html#route">The route</a>
       <a href="../index.html#guides">Guides</a>
+      <a href="../index.html#route">The route</a>
       <a href="../index.html#film">Film &amp; analysis</a>
       <a href="../index.html#analysis">The data</a>
       <a href="../index.html#partner">Partner with us</a>
     </nav>
   </header>
+
+  <nav class="wrap breadcrumb-trail" aria-label="Breadcrumb">
+    <a href="../index.html">Home</a><span class="sep">/</span><a href="../index.html#guides">Guides</a><span class="sep">/</span><span>Boston</span>
+  </nav>
 
   <section class="guide-hero">
     <a class="breadcrumb" href="../index.html#route">← Back to the route</a>
@@ -109,6 +139,7 @@
     <span class="country-tag">USA</span>
     <h2>Where to Play Pickleball in Boston</h2>
     <p class="summary">Boston has a growing pickleball scene, with dedicated indoor clubs, social venues and outdoor courts spread across the city. We weren't interested in simply listing every court — we wanted to find out where a travelling player can actually get a good game. We played at PickleBOS Charlestown and analysed our games with PBVision to see how the experience, and our own play, really measured up.</p>
+    <p class="checked-date">Guide checked: September 2026 · Last played: July 2026</p>
     <img class="hero-img" src="../images/boston-picklebos.jpg" alt="Dave and Louise at PickleBOS, Charlestown">
   </section>
 
@@ -119,7 +150,7 @@
         <h3>PickleBOS — Charlestown</h3>
         <span class="venue-meta">Charlestown · Indoor · 10 courts</span>
       </div>
-      <p>PickleBOS Charlestown is a modern, purpose-built indoor facility with a good mixture of open play, court rentals, leagues and coaching. For travelling players, the biggest attraction is the open play — you don't need to organise four people before arriving, and sessions are divided by ability.</p>
+      <p>PickleBOS Charlestown is a modern, purpose-built indoor facility with a good mixture of open play, court rentals, leagues and coaching. For travelling players, the biggest attraction is the open play — you don't need to organise four people before arriving, and sessions are divided by ability, similar to the skill-gated sessions we found at <a href="seattle.html">Sideout Tsunami in Seattle</a>.</p>
       <p>We joined an open-play session expecting something fairly casual. It turned out to be much better: there were plenty of good players, and people naturally sorted themselves into reasonably even games. Dave got into several games around the 4.0 level, making this a particularly useful stop for players around 3.5–4.0.</p>
       <p><strong>Our take:</strong> one of the easiest places we've found to turn up as a visitor and get genuinely competitive games.</p>
       <div class="venue-facts">
@@ -130,7 +161,7 @@
       </div>
       <a class="venue-link" href="https://picklebos.podplay.app" target="_blank" rel="noopener">Check current sessions →</a>
 
-      <h3 style="margin-top:32px; font-size:19px;">We Put Our Game Under the Microscope</h3>
+      <h2 style="margin-top:32px; font-size:19px;">We Put Our Game Under the Microscope</h2>
       <p>This wasn't just another pickleball session — we uploaded the match to PBVision and analysed what actually happened on court.</p>
 
       <div class="match-card">
@@ -147,7 +178,7 @@
         <a class="match-link" href="https://pb.vision/video/dw46d0sh50ex?rf=DMNYO683" target="_blank" rel="noopener">Watch the full PBVision breakdown →</a>
       </div>
 
-      <h3 style="margin-top:32px; font-size:19px;">Our Boston Verdict</h3>
+      <h2 style="margin-top:32px; font-size:19px;">Our Boston Verdict</h2>
       <table class="verdict-table">
         <tbody>
           <tr><td>Court quality</td><td class="stars">★★★★★</td></tr>
@@ -208,7 +239,7 @@
 
     <div class="split" style="margin-top:56px;">
       <div class="col">
-        <h3>Boston for a Travelling Pickleball Player</h3>
+        <h2>Boston for a Travelling Pickleball Player</h2>
         <div class="best-for-grid">
           <div class="best-for-item"><span class="mono">Best for competitive open play</span><strong>PickleBOS</strong></div>
           <div class="best-for-item"><span class="mono">Best for a social night out</span><strong>PKL Boston</strong></div>
@@ -217,7 +248,7 @@
         </div>
       </div>
       <div class="col">
-        <h3>Our Boston Pickleball Tips</h3>
+        <h2>Our Boston Pickleball Tips</h2>
         <div class="tips-list">
           <div class="tip">
             <h4>Don't just book a private court</h4>
@@ -233,15 +264,15 @@
           </div>
           <div class="tip">
             <h4>Bring your own paddle</h4>
-            <p>Most major facilities have equipment available, but if you're travelling with your own paddle, we'd use it.</p>
+            <p>Most major facilities have equipment available, but if you're travelling with your own paddle, we'd use it — the same approach that served us well at <a href="montreal.html">Pickle Montréal</a>.</p>
           </div>
         </div>
       </div>
     </div>
 
     <div class="venue" style="border-bottom:none;">
-      <h3 style="font-size:24px;">The Wanderers Take</h3>
-      <p>Boston is a very good pickleball city for travelling players. The biggest surprise for us was how easy it was to find genuinely competitive games without already knowing local players. If you're visiting Boston and want just one session, start with PickleBOS — and if you're interested in seeing what a 4.0-level game actually looked like, check out our PBVision breakdown below.</p>
+      <h2 style="font-size:24px;">The Wanderers Take</h2>
+      <p>Boston is a very good pickleball city for travelling players. The biggest surprise for us was how easy it was to find genuinely competitive games without already knowing local players. If you're visiting Boston and want just one session, start with PickleBOS. If you're mapping out a wider North America trip, our <a href="seattle.html">Seattle</a>, <a href="vancouver.html">Vancouver</a> and <a href="edmonton.html">Edmonton</a> guides are good stops to compare against.</p>
 
       <div class="rating-card">
         <div class="rating-top">
@@ -259,13 +290,13 @@
 
     <div class="split" style="margin-top:56px;">
       <div class="col">
-        <h3>More City Guides</h3>
+        <h2>More North America Guides</h2>
         <div class="best-for-grid">
           <div class="best-for-item"><a href="seattle.html"><strong>Seattle</strong></a></div>
           <div class="best-for-item"><a href="vancouver.html"><strong>Vancouver</strong></a></div>
           <div class="best-for-item"><a href="edmonton.html"><strong>Edmonton</strong></a></div>
           <div class="best-for-item"><a href="montreal.html"><strong>Montreal</strong></a></div>
-          <div class="best-for-item"><a href="algarve.html"><strong>Algarve</strong></a></div>
+          <div class="best-for-item"><a href="burlington.html"><strong>Burlington, VT</strong></a></div>
         </div>
       </div>
     </div>
