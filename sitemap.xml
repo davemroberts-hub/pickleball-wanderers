@@ -12,91 +12,103 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/boston.html</loc>
+    <loc>https://pickleballwanderers.com/guides/boston</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/vancouver.html</loc>
+    <loc>https://pickleballwanderers.com/guides/vancouver</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/edmonton.html</loc>
+    <loc>https://pickleballwanderers.com/guides/edmonton</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/montreal.html</loc>
+    <loc>https://pickleballwanderers.com/guides/montreal</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/algarve.html</loc>
+    <loc>https://pickleballwanderers.com/guides/algarve</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/seattle.html</loc>
+    <loc>https://pickleballwanderers.com/guides/seattle</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/wrexham.html</loc>
+    <loc>https://pickleballwanderers.com/guides/wrexham</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/burlington.html</loc>
+    <loc>https://pickleballwanderers.com/guides/burlington</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/danang.html</loc>
+    <loc>https://pickleballwanderers.com/guides/danang</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/leeds.html</loc>
+    <loc>https://pickleballwanderers.com/guides/leeds</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/malaga.html</loc>
+    <loc>https://pickleballwanderers.com/guides/malaga</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/rota.html</loc>
+    <loc>https://pickleballwanderers.com/guides/rota</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/goa.html</loc>
+    <loc>https://pickleballwanderers.com/guides/goa</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/sheffield.html</loc>
+    <loc>https://pickleballwanderers.com/guides/sheffield</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/bengaluru.html</loc>
+    <loc>https://pickleballwanderers.com/guides/bengaluru</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/pune.html</loc>
+    <loc>https://pickleballwanderers.com/guides/pune</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://pickleballwanderers.com/guides/hampshire.html</loc>
+    <loc>https://pickleballwanderers.com/guides/hampshire</loc>
     <lastmod>2026-10-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pickleballwanderers.com/guides/hua-hin</loc>
+    <lastmod>2026-10-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pickleballwanderers.com/stories/what-ai-analysis-taught-us</loc>
+    <lastmod>2026-10-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
