@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Ladder Admin</title>
+<link rel="icon" href="/ladder/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --bg:#f3f6f8; --surface:#ffffff; --ink:#14212e; --muted:#5d6d7c; --line:#d6dee5;
+  --court:#1d5c9e; --court-soft:#e3edf7; --win:#1f7a4d; --loss:#b23a3a;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif; --body:"Figtree",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1720;--surface:#17222e;--ink:#e6edf3;--muted:#93a3b2;--line:#2a3846;--court:#6aa8e8;--court-soft:#1c2f44;--win:#5cc58f;--loss:#ee7d7d;color-scheme:dark}}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:640px;margin:0 auto;padding-block:20px 48px;display:flex;flex-direction:column;gap:16px}
+h1{font:700 2.2rem/1 var(--display);margin:0}
+h2{font:700 1.4rem/1 var(--display);margin:0}
+.sub{color:var(--muted);font-size:.88rem;margin:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.label{font:600 .72rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1 1 140px}
+.inline{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+input{font:500 1rem var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:9px 10px;width:100%;box-sizing:border-box;min-width:0}
+input:focus-visible,button:focus-visible{outline:2px solid var(--court);outline-offset:2px}
+.btn{font:600 .95rem var(--body);border:0;border-radius:8px;padding:10px 16px;background:var(--court);color:var(--surface);cursor:pointer}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line);padding:6px 11px;font-size:.84rem}
+.btn.danger{background:var(--loss);color:var(--surface);padding:6px 11px;font-size:.84rem}
+.msg{font-size:.88rem;min-height:1.2em}.msg.ok{color:var(--win)}.msg.bad{color:var(--loss)}
+.lad{display:flex;flex-direction:column;gap:8px;padding-top:14px;border-top:1px solid var(--line)}
+.lad:first-child{border-top:0;padding-top:0}
+.lhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.lname{font-weight:600;font-size:1.05rem;overflow-wrap:anywhere}
+.addr{font:500 .82rem var(--mono);color:var(--court);overflow-wrap:anywhere;text-decoration:none}
+.stats{font-size:.82rem;color:var(--muted)}
+.warn{color:var(--loss);font-weight:600}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.edit{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;background:var(--court-soft);border-radius:8px;padding:10px}
+.topbar{display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.linkbtn{background:none;border:0;color:var(--court);font:600 .85rem var(--body);cursor:pointer;padding:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <div><h1>Ladder Admin</h1><p class="sub">Create and manage ladders on pickleballwanderers.com</p></div>
+    <button type="button" class="linkbtn" id="signout" hidden>Sign out</button>
+  </div>
+
+  <form class="card" id="claim-form" hidden novalidate>
+    <h2>Set your admin password</h2>
+    <p class="sub">This is the first visit, so choose the password that will protect this page. Only you should know it. At least 8 characters.</p>
+    <div class="field"><label class="label" for="claim-pw">Password</label><input id="claim-pw" type="password" autocomplete="new-password"></div>
+    <div class="field"><label class="label" for="claim-pw2">Repeat password</label><input id="claim-pw2" type="password" autocomplete="new-password"></div>
+    <button class="btn" type="submit">Set password</button>
+    <div class="msg" id="claim-msg" role="status"></div>
+  </form>
+
+  <form class="card" id="login-form" hidden novalidate>
+    <h2>Sign in</h2>
+    <div class="field"><label class="label" for="login-pw">Admin password</label><input id="login-pw" type="password" autocomplete="current-password"></div>
+    <button class="btn" type="submit">Sign in</button>
+    <div class="msg" id="login-msg" role="status"></div>
+  </form>
+
+  <div id="main" hidden style="display:flex;flex-direction:column;gap:16px">
+    <div class="card">
+      <h2>Ladders</h2>
+      <div id="ladders"><p class="sub">Loading…</p></div>
+      <div class="msg" id="list-msg" role="status"></div>
+    </div>
+
+    <form class="card" id="new-form" novalidate>
+      <h2>New ladder</h2>
+      <div class="field"><label class="label" for="new-name">Name</label><input id="new-name" placeholder="e.g. Olhão Pickleball Club" autocomplete="off"></div>
+      <div class="inline">
+        <div class="field"><label class="label" for="new-slug">Web address</label><input id="new-slug" placeholder="olhao" autocomplete="off" autocapitalize="off"></div>
+        <div class="field" style="flex:0 1 8rem"><label class="label" for="new-pin">Group PIN</label><input id="new-pin" inputmode="numeric" placeholder="4–8 digits" autocomplete="off"></div>
+      </div>
+      <p class="sub" id="new-preview">Address: pickleballwanderers.com/ladder/…/</p>
+      <button class="btn" type="submit">Create ladder</button>
+      <div class="msg" id="new-msg" role="status"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const el = (t, c, x) => { const e = document.createElement(t); if (c) e.className = c; if (x != null) e.textContent = x; return e; };
+  const BASE = "/ladder-api/_admin";
+  let key = "";
+  try { key = localStorage.getItem("ladder-admin") || ""; } catch (e) {}
+  let confirmDel = null, editing = null;
+
+  function msg(id, text, ok) { const m = $(id); m.textContent = text; m.className = "msg " + (ok ? "ok" : "bad"); }
+  async function call(method, path, body) {
+    const r = await fetch(BASE + path, { method, headers: { "content-type": "application/json", "x-admin-key": key }, body: body ? JSON.stringify(body) : undefined });
+    let data = {}; try { data = await r.json(); } catch (e) {}
+    if (r.status === 401) { signOut(); throw new Error("Signed out. Enter the admin password again."); }
+    if (!r.ok) throw new Error(r.status === 429 ? "Too many attempts. Wait a minute." : data.error || "Something went wrong. Try again.");
+    return data;
+  }
+  function show(view) {
+    $("claim-form").hidden = view !== "claim"; $("login-form").hidden = view !== "login";
+    $("main").hidden = view !== "main"; $("signout").hidden = view !== "main";
+  }
+  function signOut() { key = ""; try { localStorage.removeItem("ladder-admin"); } catch (e) {} show("login"); }
+  function remember(k) { key = k; try { localStorage.setItem("ladder-admin", k); } catch (e) {} }
+
+  async function start() {
+    if (key) { try { await call("GET", "/check"); show("main"); load(); return; } catch (e) {} }
+    try {
+      const st = await (await fetch(BASE + "/status", { cache: "no-store" })).json();
+      show(st.claimed ? "login" : "claim");
+    } catch (e) { show("login"); msg("login-msg", "Can't reach the server. Check your connection.", false); }
+  }
+
+  $("claim-form").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const a = $("claim-pw").value, b = $("claim-pw2").value;
+    if (a.length < 8) return msg("claim-msg", "Use at least 8 characters.", false);
+    if (a !== b) return msg("claim-msg", "The two passwords don't match.", false);
+    try { await call("POST", "/claim", { password: a }); remember(a); show("main"); load(); }
+    catch (e) { msg("claim-msg", e.message, false); }
+  });
+  $("login-form").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    remember($("login-pw").value);
+    try { await call("GET", "/check"); $("login-pw").value = ""; msg("login-msg", "", true); show("main"); load(); }
+    catch (e) { show("login"); msg("login-msg", "That password isn't right.", false); }
+  });
+  $("signout").addEventListener("click", signOut);
+
+  let ladders = [];
+  async function load() {
+    try { ladders = (await call("GET", "/ladders")).ladders; render(); }
+    catch (e) { msg("list-msg", e.message, false); }
+  }
+
+  function copy(text, btn) {
+    const done = () => { const t = btn.textContent; btn.textContent = "Copied"; setTimeout(() => btn.textContent = t, 1500); };
+    navigator.clipboard?.writeText(text).then(done, () => window.prompt("Copy this link", text));
+  }
+
+  function render() {
+    const box = $("ladders"); box.replaceChildren();
+    if (!ladders.length) { box.append(el("p", "sub", "No ladders yet. Create one below.")); return; }
+    for (const l of ladders) {
+      const row = el("div", "lad");
+      const head = el("div", "lhead"); head.append(el("span", "lname", l.name));
+      const url = location.origin + "/ladder/" + l.slug + "/";
+      const a = el("a", "addr", "/ladder/" + l.slug + "/"); a.href = url; a.target = "_blank"; a.rel = "noopener";
+      head.append(a); row.append(head);
+      const stats = el("div", "stats", `${l.players} player${l.players === 1 ? "" : "s"} · ${l.games} game${l.games === 1 ? "" : "s"} · `);
+      stats.append(l.hasPin ? el("span", null, "PIN set") : el("span", "warn", "No PIN yet: nobody can record games"));
+      row.append(stats);
+
+      const actions = el("div", "actions");
+      const b = (label, fn, cls) => { const x = el("button", cls || "btn ghost", label); x.type = "button"; x.addEventListener("click", fn); actions.append(x); return x; };
+      const cp = b("Copy link", () => copy(url, cp));
+      b("Rename", () => { editing = { slug: l.slug, field: "name" }; render(); });
+      b(l.hasPin ? "Change PIN" : "Set PIN", () => { editing = { slug: l.slug, field: "pin" }; render(); });
+      b(confirmDel === l.slug ? `Delete ${l.games} games and ${l.players} players` : "Delete", async () => {
+        if (confirmDel !== l.slug) { confirmDel = l.slug; render(); return; }
+        confirmDel = null;
+        try { await call("DELETE", "/ladders/" + l.slug); msg("list-msg", `Deleted ${l.name}.`, true); load(); }
+        catch (e) { msg("list-msg", e.message, false); render(); }
+      }, confirmDel === l.slug ? "btn danger" : "btn ghost");
+      row.append(actions);
+
+      if (editing && editing.slug === l.slug) {
+        const f = el("form", "edit"); f.noValidate = true;
+        const fld = el("div", "field");
+        const lab = el("label", "label", editing.field === "name" ? "New name" : "New PIN (4–8 digits)");
+        const inp = el("input"); inp.id = "edit-" + l.slug; lab.htmlFor = inp.id;
+        if (editing.field === "name") inp.value = l.name; else { inp.inputMode = "numeric"; inp.autocomplete = "off"; }
+        fld.append(lab, inp);
+        const save = el("button", "btn", "Save"); save.type = "submit";
+        const cancel = el("button", "btn ghost", "Cancel"); cancel.type = "button";
+        cancel.addEventListener("click", () => { editing = null; render(); });
+        f.append(fld, save, cancel);
+        f.addEventListener("submit", async ev => {
+          ev.preventDefault();
+          const v = inp.value.trim();
+          try {
+            await call("PATCH", "/ladders/" + l.slug, editing.field === "name" ? { name: v } : { pin: v });
+            msg("list-msg", editing.field === "name" ? "Renamed." : `PIN updated for ${l.name}. Players will need to enter the new one.`, true);
+            editing = null; load();
+          } catch (e) { msg("list-msg", e.message, false); }
+        });
+        row.append(f);
+        setTimeout(() => inp.focus(), 0);
+      }
+      box.append(row);
+    }
+  }
+
+  const slugify = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 31);
+  let slugTouched = false;
+  $("new-name").addEventListener("input", () => { if (!slugTouched) $("new-slug").value = slugify($("new-name").value); preview(); });
+  $("new-slug").addEventListener("input", () => { slugTouched = true; preview(); });
+  function preview() { $("new-preview").textContent = "Address: pickleballwanderers.com/ladder/" + (slugify($("new-slug").value) || "…") + "/"; }
+  $("new-form").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const name = $("new-name").value.trim(), slug = slugify($("new-slug").value), pin = $("new-pin").value.trim();
+    if (!name) return msg("new-msg", "Enter a name.", false);
+    if (slug.length < 2) return msg("new-msg", "Choose a web address of at least 2 letters or numbers.", false);
+    if (!/^\d{4,8}$/.test(pin)) return msg("new-msg", "The PIN should be 4 to 8 digits.", false);
+    try {
+      await call("POST", "/ladders", { name, slug, pin });
+      msg("new-msg", `Created ${name}. Send the group the link and PIN.`, true);
+      $("new-name").value = ""; $("new-slug").value = ""; $("new-pin").value = ""; slugTouched = false; preview();
+      load();
+    } catch (e) { msg("new-msg", e.message, false); }
+  });
+
+  start();
+})();
+</script>
+</body>
+</html>

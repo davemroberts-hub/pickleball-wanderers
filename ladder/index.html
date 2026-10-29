@@ -9,7 +9,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Ladder">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="/ladder/manifest.webmanifest">
+<script>
+  window.LADDER_SLUG = (function () {
+    var m = location.pathname.match(/^\/ladder\/([a-z0-9][a-z0-9-]{1,30})\/?$/);
+    return m ? m[1] : "main";
+  })();
+  document.write('<link rel="manifest" href="/ladder-api/' + window.LADDER_SLUG + '/manifest">');
+</script>
 <link rel="icon" href="/ladder/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/ladder/icon-180.png">
 <style>
@@ -149,7 +155,7 @@ details p{margin:8px 0 0}
 <body>
 <div class="wrap">
   <header>
-    <h1>Pickleball Ladder</h1>
+    <h1 id="ladder-name">Pickleball Ladder</h1>
     <p>Elo ratings seeded from DUPR, shown on the DUPR scale. Anyone with the group PIN can record a game.</p>
     <p class="sub" id="lock-state" hidden>Editing unlocked on this device · <button type="button" class="linkbtn" id="lock-btn">Lock</button></p>
   </header>
@@ -496,7 +502,9 @@ details p{margin:8px 0 0}
 
   /* ---------- fair teams ---------- */
   let lastSt = new Map();
-  const SKEY = "pb-session-v1";
+  const SLUG = window.LADDER_SLUG || "main";
+  const API = "/ladder-api/" + SLUG;
+  const SKEY = "pb-session:" + SLUG;
   let sess = { here: [], courts: 0, mode: "mixed", rounds: [] };
   try { const raw = localStorage.getItem(SKEY); if (raw) sess = { ...sess, ...JSON.parse(raw) }; } catch (e) {}
   const saveSess = () => { try { localStorage.setItem(SKEY, JSON.stringify(sess)); } catch (e) {} };
@@ -715,7 +723,7 @@ details p{margin:8px 0 0}
       del.addEventListener("click", async () => {
         if (confirmId !== m.id) { confirmId = m.id; render(); return; }
         confirmId = null;
-        try { await api("DELETE", "/ladder/api/matches/" + m.id); await refresh(); } catch (e) { if (e.code === "pin") showPinBar(true); setStatus(e.code === "pin" ? "Enter the group PIN to delete games." : "Couldn't delete that game. Try again.", true); render(); }
+        try { await api("DELETE", API + "/matches/" + m.id); await refresh(); } catch (e) { if (e.code === "pin") showPinBar(true); setStatus(e.code === "pin" ? "Enter the group PIN to delete games." : "Couldn't delete that game. Try again.", true); render(); }
       });
       meta.append(del);
       row.append(meta);
@@ -736,7 +744,7 @@ details p{margin:8px 0 0}
       save.addEventListener("click", async () => {
         const v = inp.value.trim() === "" ? null : Number(inp.value);
         if (v !== null && !(v >= 2 && v <= 8)) { msg("player-msg", "DUPR should be between 2.0 and 8.0.", false); return; }
-        try { await api("PATCH", "/ladder/api/players/" + p.id, { dupr: v }); await refresh(); msg("player-msg", `Updated ${p.name}.`, true); }
+        try { await api("PATCH", API + "/players/" + p.id, { dupr: v }); await refresh(); msg("player-msg", `Updated ${p.name}.`, true); }
         catch (e) { writeErr(e, "player-msg"); }
       });
       r.append(inp, save);
@@ -746,7 +754,7 @@ details p{margin:8px 0 0}
         del.addEventListener("click", async () => {
           if (confirmId !== p.id) { confirmId = p.id; render(); return; }
           confirmId = null;
-          try { await api("DELETE", "/ladder/api/players/" + p.id); await refresh(); } catch (e) { writeErr(e, "player-msg"); render(); }
+          try { await api("DELETE", API + "/players/" + p.id); await refresh(); } catch (e) { writeErr(e, "player-msg"); render(); }
         });
         r.append(del);
       }
@@ -791,7 +799,7 @@ details p{margin:8px 0 0}
     if (sa === sb) return msg("match-msg", "Scores can't be tied; pickleball needs a winner.", false);
     const playedAt = $("played").value || today();
     try {
-      await api("POST", "/ladder/api/matches", { a, b, sa, sb, playedAt }); await refresh();
+      await api("POST", API + "/matches", { a, b, sa, sb, playedAt }); await refresh();
       msg("match-msg", "Game saved. Ratings updated.", true);
       $("sa").value = ""; $("sb").value = "";
     } catch (e) { writeErr(e, "match-msg"); }
@@ -806,7 +814,7 @@ details p{margin:8px 0 0}
     if ([...players.values()].some(p => p.name.toLowerCase() === name.toLowerCase())) return msg("player-msg", `${name} is already on the ladder.`, false);
     if (dupr !== null && !(dupr >= 2 && dupr <= 8)) return msg("player-msg", "DUPR should be between 2.0 and 8.0.", false);
     try {
-      await api("POST", "/ladder/api/players", { name, dupr }); await refresh();
+      await api("POST", API + "/players", { name, dupr }); await refresh();
       msg("player-msg", `Added ${name}.`, true);
       $("pname").value = ""; $("pdupr").value = ""; $("pname").focus();
     } catch (e) { writeErr(e, "player-msg"); }
@@ -829,7 +837,7 @@ details p{margin:8px 0 0}
 
   /* ---------- PIN ---------- */
   let pin = "";
-  try { pin = localStorage.getItem("ladder-pin") || ""; } catch (e) {}
+  try { pin = localStorage.getItem("ladder-pin:" + SLUG) || ""; } catch (e) {}
   function showPinBar(force) {
     const bar = $("pinbar");
     bar.hidden = !!pin && !force;
@@ -841,16 +849,16 @@ details p{margin:8px 0 0}
     const v = $("pin-input").value.trim();
     if (!v) return;
     try {
-      const r = await fetch("/ladder/api/check-pin", { method: "POST", headers: { "x-ladder-pin": v } });
+      const r = await fetch(API + "/check-pin", { method: "POST", headers: { "x-ladder-pin": v } });
       if (r.ok) {
-        pin = v; try { localStorage.setItem("ladder-pin", v); } catch (e) {}
+        pin = v; try { localStorage.setItem("ladder-pin:" + SLUG, v); } catch (e) {}
         $("pin-input").value = ""; $("pin-msg").textContent = "";
         $("pinbar").hidden = true; $("lock-state").hidden = false;
-      } else $("pin-msg").textContent = r.status === 429 ? "Too many tries. Wait a minute and try again." : "That PIN isn't right.";
+      } else $("pin-msg").textContent = r.status === 429 ? "Too many tries. Wait a minute and try again." : r.status === 403 ? "This ladder doesn't have a PIN yet. Ask the organiser to set one." : "That PIN isn't right.";
     } catch (e) { $("pin-msg").textContent = "Couldn't check the PIN. Check your connection."; }
   });
   $("lock-btn").addEventListener("click", () => {
-    pin = ""; try { localStorage.removeItem("ladder-pin"); } catch (e) {}
+    pin = ""; try { localStorage.removeItem("ladder-pin:" + SLUG); } catch (e) {}
     showPinBar(false);
   });
 
@@ -860,34 +868,44 @@ details p{margin:8px 0 0}
     try {
       r = await fetch(path, { method, headers: { "content-type": "application/json", "x-ladder-pin": pin }, body: body ? JSON.stringify(body) : undefined });
     } catch (e) { throw { code: "network" }; }
-    if (r.status === 401) { pin = ""; try { localStorage.removeItem("ladder-pin"); } catch (e) {} throw { code: "pin" }; }
+    if (r.status === 401) { pin = ""; try { localStorage.removeItem("ladder-pin:" + SLUG); } catch (e) {} throw { code: "pin" }; }
     if (!r.ok) { let m = ""; try { m = (await r.json()).error; } catch (e) {} throw { code: r.status === 400 || r.status === 409 ? "invalid" : "server", message: m }; }
     return r.json();
   }
   let lastSig = "";
   async function refresh() {
     try {
-      const r = await fetch("/ladder/api/state", { cache: "no-store" });
+      const r = await fetch(API + "/state", { cache: "no-store" });
+      if (r.status === 404) { notFound(); return; }
       if (!r.ok) throw 0;
       const data = await r.json();
+      if (data.ladder) { $("ladder-name").textContent = data.ladder.name; document.title = data.ladder.name; }
       const sig = JSON.stringify(data);
       loaded = true; setStatus("");
       if (sig === lastSig) return;
       lastSig = sig;
       players = new Map(data.players.map(p => [p.id, p]));
       matches = data.matches.filter(m => Array.isArray(m.a) && Array.isArray(m.b));
-      try { localStorage.setItem("ladder-cache", sig); } catch (e) {}
+      try { localStorage.setItem("ladder-cache:" + SLUG, sig); } catch (e) {}
       render();
     } catch (e) {
       if (!loaded) setStatus("Can't reach the ladder right now. Showing the last saved copy if there is one.", true);
     }
   }
 
+  function notFound() {
+    document.querySelector(".wrap").replaceChildren(
+      el("h1", null, "Ladder not found"),
+      el("p", "sub", "There's no ladder at this address. Check the link you were sent, or ask the organiser for it."));
+    document.title = "Ladder not found";
+  }
+
   /* ---------- start ---------- */
   syncFmt();
   try {
-    const c = localStorage.getItem("ladder-cache");
-    if (c) { const d = JSON.parse(c); players = new Map(d.players.map(p => [p.id, p])); matches = d.matches; lastSig = c; }
+    const c = localStorage.getItem("ladder-cache:" + SLUG);
+    if (c) { const d = JSON.parse(c); players = new Map(d.players.map(p => [p.id, p])); matches = d.matches; lastSig = c;
+      if (d.ladder) { $("ladder-name").textContent = d.ladder.name; document.title = d.ladder.name; } }
   } catch (e) {}
   render();
   showPinBar(false);
