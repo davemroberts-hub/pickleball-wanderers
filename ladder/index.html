@@ -37,6 +37,19 @@ h1{font:700 2.4rem/1 var(--display);margin:0;text-wrap:balance}
 .go{font:600 .85rem var(--body);color:var(--court);white-space:nowrap}
 .empty{border:1.5px dashed var(--line);border-radius:10px;padding:24px 16px;text-align:center;color:var(--muted)}
 .note{font-size:.86rem;color:var(--muted);margin:0}
+.start{display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.start h2{font:700 1.5rem/1 var(--display);margin:0}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1 1 140px}
+.label{font:600 .72rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+input{font:500 1rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:9px 10px;width:100%;box-sizing:border-box;min-width:0}
+input:focus-visible,button:focus-visible{outline:2px solid var(--court);outline-offset:2px}
+.btn{font:600 .95rem var(--body);border:0;border-radius:8px;padding:11px 16px;background:var(--court);color:var(--surface);cursor:pointer;align-self:flex-start}
+.btn.ghost{background:none;color:var(--court);border:1px solid var(--line)}
+.hint{font-size:.82rem;color:var(--muted);margin:0;overflow-wrap:anywhere}
+.msg{font-size:.88rem;min-height:1.2em;color:#b23a3a}
+@media (prefers-color-scheme:dark){.msg{color:#ee7d7d}}
+.trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 </style>
 </head>
 <body>
@@ -49,6 +62,23 @@ h1{font:700 2.4rem/1 var(--display);margin:0;text-wrap:balance}
   <ul class="list" id="list" hidden></ul>
   <div class="empty" id="empty">Loading ladders…</div>
   <p class="note">Recording games needs your group's PIN. Ask your organiser for it.</p>
+
+  <button class="btn ghost" type="button" id="start-open">+ Start a ladder for your group</button>
+  <form class="start" id="start-form" hidden novalidate>
+    <h2>Start a ladder</h2>
+    <p class="hint">Free for any group. You choose the PIN; share it with your players so they can record games. Anyone can view the ladder.</p>
+    <div class="field"><label class="label" for="s-name">Group name</label><input id="s-name" maxlength="50" placeholder="e.g. Tavira Tuesday Group" autocomplete="off"></div>
+    <div class="field"><label class="label" for="s-slug">Web address</label><input id="s-slug" maxlength="31" placeholder="tavira-tuesday" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <p class="hint" id="s-preview">pickleballwanderers.com/ladder/…/</p>
+    <div class="row">
+      <div class="field"><label class="label" for="s-pin">Group PIN</label><input id="s-pin" type="password" inputmode="numeric" maxlength="8" placeholder="4–8 digits" autocomplete="new-password"></div>
+      <div class="field"><label class="label" for="s-pin2">Repeat PIN</label><input id="s-pin2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"></div>
+    </div>
+    <div class="trap" aria-hidden="true"><label for="s-website">Website</label><input id="s-website" tabindex="-1" autocomplete="off"></div>
+    <p class="hint">Keep a note of the PIN. If it's lost, contact Pickleball Wanderers to reset it.</p>
+    <button class="btn" type="submit" id="s-submit">Create ladder</button>
+    <div class="msg" id="s-msg" role="status"></div>
+  </form>
 </div>
 <script>
 (() => {
@@ -70,6 +100,34 @@ h1{font:700 2.4rem/1 var(--display);margin:0;text-wrap:balance}
     empty.hidden = !!ladders.length;
     if (!ladders.length) empty.textContent = "No ladders yet.";
   }
+  /* ---- start a ladder ---- */
+  const $ = id => document.getElementById(id);
+  const slugify = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 31);
+  let slugTouched = false;
+  const preview = () => { $("s-preview").textContent = "pickleballwanderers.com/ladder/" + (slugify($("s-slug").value) || "…") + "/"; };
+  $("start-open").addEventListener("click", () => { $("start-form").hidden = false; $("start-open").hidden = true; $("s-name").focus(); });
+  $("s-name").addEventListener("input", () => { if (!slugTouched) $("s-slug").value = slugify($("s-name").value); preview(); });
+  $("s-slug").addEventListener("input", () => { slugTouched = true; preview(); });
+  $("start-form").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const m = $("s-msg"); m.textContent = "";
+    const name = $("s-name").value.trim(), slug = slugify($("s-slug").value), pin = $("s-pin").value.trim();
+    if (name.length < 3) return m.textContent = "Give your ladder a name of at least 3 characters.";
+    if (slug.length < 2) return m.textContent = "Choose a web address of at least 2 letters or numbers.";
+    if (!/^\d{4,8}$/.test(pin)) return m.textContent = "The PIN should be 4 to 8 digits.";
+    if (pin !== $("s-pin2").value.trim()) return m.textContent = "The two PINs don't match.";
+    $("s-submit").disabled = true;
+    try {
+      const r = await fetch("/ladder-create", { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name, slug, pin, website: $("s-website").value }) });
+      let d = {}; try { d = await r.json(); } catch (e) {}
+      if (!r.ok) { m.textContent = r.status === 429 ? "Too many attempts. Wait a minute and try again." : (d.error || "Couldn't create the ladder. Try again."); return; }
+      try { localStorage.setItem("ladder-pin:" + d.slug, pin); localStorage.removeItem("ladder-list"); } catch (e) {}
+      location.href = "/ladder/" + d.slug + "/";
+    } catch (e) { m.textContent = "Couldn't reach the server. Check your connection."; }
+    finally { $("s-submit").disabled = false; }
+  });
+
   try { const c = localStorage.getItem("ladder-list"); if (c) show(JSON.parse(c)); } catch (e) {}
   fetch("/ladder-api/_list").then(r => { if (!r.ok) throw 0; return r.json(); }).then(d => {
     show(d.ladders);
