@@ -1,3 +1,7 @@
 # Keep server code and project files from being served as pages
-/netlify/*      /404.html  404!
-/package.json   /404.html  404!
+/netlify/*        /404.html               404!
+/package.json     /404.html               404!
+# Private admin page for creating ladders
+/ladder/admin     /ladder/admin.html      200
+# Every /ladder/<name>/ address shows that ladder (the list of ladders is /ladder/)
+/ladder/:slug/    /ladder/app.html        200

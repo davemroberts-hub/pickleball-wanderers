@@ -3,900 +3,137 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Pickleball Wanderers group ladder: Elo ratings seeded from DUPR, fair teams and standings.">
+<title>Ladders · Pickleball Wanderers</title>
+<meta name="description" content="Group pickleball ladders run by Pickleball Wanderers: Elo ratings seeded from DUPR, fair teams and standings.">
 <meta name="theme-color" content="#1d5c9e" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0f1720" media="(prefers-color-scheme: dark)">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Ladder">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="/ladder/manifest.webmanifest">
 <link rel="icon" href="/ladder/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/ladder/icon-180.png">
-<style>
-:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;font:14px system-ui,sans-serif}
-img{max-width:100%}
-[hidden]{display:none!important}
-</style>
-<title>Pickleball Ladder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
 <style>
-/* Layout: one narrow scoreboard column, tab bar on top, court-line dividers */
+/* Layout: one narrow column; each ladder is a row you tap through to */
 :root{
   --bg:#f3f6f8; --surface:#ffffff; --ink:#14212e; --muted:#5d6d7c; --line:#d6dee5;
-  --court:#1d5c9e; --court-soft:#e3edf7; --win:#1f7a4d; --loss:#b23a3a;
-  --display:"Barlow Condensed","Arial Narrow",sans-serif;
-  --body:"Figtree",system-ui,sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,monospace;
-  --grid:#e1e6ea; --axis:#c3ccd4;
-  --s0:#2a78d6; --s1:#eb6834; --s2:#1baf7a; --s3:#eda100; --s4:#e87ba4; --s5:#008300; --s6:#6250d6; --s7:#e34948;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0f1720; --surface:#17222e; --ink:#e6edf3; --muted:#93a3b2; --line:#2a3846;
-  --court:#6aa8e8; --court-soft:#1c2f44; --win:#5cc58f; --loss:#ee7d7d; color-scheme:dark;
-  --grid:#24313d; --axis:#364656;
-  --s0:#3987e5; --s1:#d95926; --s2:#199e70; --s3:#c98500; --s4:#d55181; --s5:#008300; --s6:#9085e9; --s7:#e66767}}
-:root[data-theme="dark"]{
-  --bg:#0f1720; --surface:#17222e; --ink:#e6edf3; --muted:#93a3b2; --line:#2a3846;
-  --court:#6aa8e8; --court-soft:#1c2f44; --win:#5cc58f; --loss:#ee7d7d; color-scheme:dark;
-  --grid:#24313d; --axis:#364656;
-  --s0:#3987e5; --s1:#d95926; --s2:#199e70; --s3:#c98500; --s4:#d55181; --s5:#008300; --s6:#9085e9; --s7:#e66767}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;
+  --court:#1d5c9e; --court-soft:#e3edf7;
+  --display:"Barlow Condensed","Arial Narrow",sans-serif; --body:"Figtree",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1720;--surface:#17222e;--ink:#e6edf3;--muted:#93a3b2;--line:#2a3846;--court:#6aa8e8;--court-soft:#1c2f44;color-scheme:dark}}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--body);
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .wrap{max-width:640px;margin:0 auto;padding-block:20px 48px;display:flex;flex-direction:column;gap:18px}
-header h1{font-family:var(--display);font-weight:700;font-size:2.2rem;letter-spacing:.01em;margin:0;line-height:1;text-wrap:balance}
-header p{margin:6px 0 0;color:var(--muted);font-size:.9rem}
-nav{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px;overflow-x:auto;scrollbar-width:none}
-nav button{flex:1 0 auto;border:0;background:none;color:var(--muted);font:600 .85rem var(--body);padding:9px 9px;border-radius:7px;cursor:pointer}
-nav button[aria-selected="true"]{background:var(--court);color:var(--surface)}
-button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--court);outline-offset:2px}
-.panel{display:flex;flex-direction:column;gap:12px}
-.label{font:600 .72rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
-.notice{background:var(--court-soft);border-radius:8px;padding:12px 14px;font-size:.9rem}
-.notice.err{color:var(--loss)}
+.back{font-size:.88rem;color:var(--muted);text-decoration:none;align-self:flex-start}
+.back:hover{color:var(--ink)}
+h1{font:700 2.4rem/1 var(--display);margin:0;text-wrap:balance}
+.lede{margin:6px 0 0;color:var(--muted);max-width:52ch}
+.list{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.list li + li{border-top:1px solid var(--line)}
+.list a{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:14px 16px;color:inherit;text-decoration:none}
+.list a:hover{background:var(--court-soft)}
+.list a:focus-visible{outline:2px solid var(--court);outline-offset:-2px;border-radius:10px}
+.name{font-weight:600;font-size:1.05rem;overflow-wrap:anywhere}
+.meta{font-size:.82rem;color:var(--muted);margin-top:2px;font-variant-numeric:tabular-nums}
+.go{font:600 .85rem var(--body);color:var(--court);white-space:nowrap}
 .empty{border:1.5px dashed var(--line);border-radius:10px;padding:24px 16px;text-align:center;color:var(--muted)}
-/* leaderboard */
-.board{list-style:none;margin:0;padding:0;background:var(--surface);border:1px solid var(--line);border-radius:10px}
-.row{display:grid;grid-template-columns:2rem minmax(0,1fr) 64px 4.2rem;align-items:center;gap:10px;padding:11px 14px;border-top:1px solid var(--line)}
-.row:first-child{border-top:0}
-.rank{font:700 1.2rem var(--display);color:var(--muted);font-variant-numeric:tabular-nums}
-.row:nth-child(1) .rank{color:var(--court)}
-.name{font-weight:600;min-width:0;overflow-wrap:anywhere}
-.sub{font-size:.78rem;color:var(--muted);font-weight:400}
-.prov{display:inline-block;font-size:.66rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line);border-radius:4px;padding:0 4px;margin-left:4px;color:var(--muted);vertical-align:1px}
-.rating{text-align:right;font:500 1.15rem var(--mono);font-variant-numeric:tabular-nums}
-.rating small{display:block;font-size:.68rem;color:var(--muted)}
-svg.spark{width:64px;height:24px;display:block}
-/* forms */
-form,.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:14px}
-.teams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media (max-width:420px){.teams{grid-template-columns:1fr}}
-.team{display:flex;flex-direction:column;gap:8px;padding:12px;border-radius:8px;background:var(--court-soft)}
-.field{display:flex;flex-direction:column;gap:5px;min-width:0}
-input,select{font:500 1rem var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:9px 10px;width:100%;box-sizing:border-box;min-width:0}
-input.score{font:500 1.4rem var(--mono);text-align:center}
-.seg{display:flex;gap:6px}
-.seg label{flex:1;text-align:center;border:1px solid var(--line);border-radius:7px;padding:8px;cursor:pointer;font-weight:600;font-size:.9rem}
-.seg input{position:absolute;opacity:0;width:1px}
-.seg input:checked+span{color:var(--court)}
-.seg label:has(input:checked){border-color:var(--court);background:var(--court-soft)}
-.inline{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
-.inline .field{flex:1 1 140px}
-.btn{font:600 .95rem var(--body);border:0;border-radius:8px;padding:11px 16px;background:var(--court);color:var(--surface);cursor:pointer}
-.btn.ghost{background:none;color:var(--muted);border:1px solid var(--line);padding:6px 10px;font-size:.82rem}
-.btn.danger{background:var(--loss);color:var(--surface);padding:6px 10px;font-size:.82rem}
-.msg{font-size:.88rem;min-height:1.2em}
-.msg.ok{color:var(--win)} .msg.bad{color:var(--loss)}
-/* matches */
-.match{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:12px 14px;border-top:1px solid var(--line)}
-.match:first-child{border-top:0}
-.side{display:flex;justify-content:space-between;gap:10px;min-width:0}
-.side .who{min-width:0;overflow-wrap:anywhere}
-.side.won .who{font-weight:600}
-.side .pts{font:500 1rem var(--mono);font-variant-numeric:tabular-nums}
-.delta{font:500 .78rem var(--mono)}
-.up{color:var(--win)} .down{color:var(--loss)}
-.meta{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.78rem;color:var(--muted)}
-.list{background:var(--surface);border:1px solid var(--line);border-radius:10px}
-.prow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--line)}
-.prow:first-child{border-top:0}
-.prow .name{flex:1 1 120px}
-.prow input{width:5.5rem;flex:0 0 auto}
-details{font-size:.86rem;color:var(--muted)}
-details summary{cursor:pointer;font-weight:600}
-details p{margin:8px 0 0}
-/* teams */
-.rhead{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 10px}
-.rtitle{font:700 1.5rem var(--display);line-height:1}
-.court{display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--line)}
-.tline{display:flex;justify-content:space-between;gap:10px;font-weight:600;min-width:0}
-.tline span:first-child{min-width:0;overflow-wrap:anywhere}
-.pct{font:500 .9rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
-.vs{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
-.court .btn{align-self:flex-start;margin-top:2px}
-.toprow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.linkbtn{background:none;border:0;color:var(--court);font:600 .82rem var(--body);cursor:pointer;padding:2px}
-.earlier{display:flex;flex-direction:column;gap:12px;margin-top:10px}
-.stand{margin-top:0}
-.stand table{width:100%}
-.stand th{font:600 .7rem var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.stand td{font-family:var(--mono);font-size:.82rem}
-.stand td:first-child{font-family:var(--body);font-weight:600;font-size:.88rem}
-.stand th:first-child,.stand td:first-child{position:sticky;left:0;background:var(--surface);max-width:9rem;overflow:hidden;text-overflow:ellipsis}
-.stand .none{padding:18px 4px;color:var(--muted);font-size:.88rem}
-/* trends */
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:5px 11px;font:500 .85rem var(--body);cursor:pointer}
-.chip[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
-.sw{width:10px;height:10px;border-radius:50%;background:var(--line);flex:0 0 auto}
-.chartbox{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 8px 6px}
-.chartbox svg{display:block;width:100%;height:auto;touch-action:pan-y}
-.chartbox text{font:500 11px var(--mono);fill:var(--muted)}
-.chartbox text.dl{font:600 11px var(--body);fill:var(--ink)}
-.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:.8rem;box-shadow:0 4px 14px rgba(0,0,0,.12);min-width:130px;z-index:2}
-.tip .td{font-weight:600;margin-bottom:4px}
-.tip .tr{display:flex;align-items:center;gap:6px;justify-content:space-between}
-.tip .tr span:last-child{font-family:var(--mono);font-variant-numeric:tabular-nums}
-.tablewrap{overflow-x:auto;margin-top:8px}
-.tablewrap table{border-collapse:collapse;font-size:.82rem;font-variant-numeric:tabular-nums}
-.tablewrap th,.tablewrap td{padding:5px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;color:var(--ink)}
-.tablewrap th:first-child,.tablewrap td:first-child{text-align:left}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.note{font-size:.86rem;color:var(--muted);margin:0}
+.start{display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.start h2{font:700 1.5rem/1 var(--display);margin:0}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0;flex:1 1 140px}
+.label{font:600 .72rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+input{font:500 1rem var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:9px 10px;width:100%;box-sizing:border-box;min-width:0}
+input:focus-visible,button:focus-visible{outline:2px solid var(--court);outline-offset:2px}
+.btn{font:600 .95rem var(--body);border:0;border-radius:8px;padding:11px 16px;background:var(--court);color:var(--surface);cursor:pointer;align-self:flex-start}
+.btn.ghost{background:none;color:var(--court);border:1px solid var(--line)}
+.hint{font-size:.82rem;color:var(--muted);margin:0;overflow-wrap:anywhere}
+.msg{font-size:.88rem;min-height:1.2em;color:#b23a3a}
+@media (prefers-color-scheme:dark){.msg{color:#ee7d7d}}
+.trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 </style>
-
 </head>
 <body>
 <div class="wrap">
+  <a class="back" href="/">← Pickleball Wanderers</a>
   <header>
-    <h1>Pickleball Ladder</h1>
-    <p>Elo ratings seeded from DUPR, shown on the DUPR scale. Anyone with the group PIN can record a game.</p>
-    <p class="sub" id="lock-state" hidden>Editing unlocked on this device · <button type="button" class="linkbtn" id="lock-btn">Lock</button></p>
+    <h1>Ladders</h1>
+    <p class="lede">Ratings for the groups we play with, starting from each player's DUPR. Pick your group to see the standings, make fair teams and record games.</p>
   </header>
+  <ul class="list" id="list" hidden></ul>
+  <div class="empty" id="empty">Loading ladders…</div>
+  <p class="note">Recording games needs your group's PIN. Ask your organiser for it.</p>
 
-  <form class="card" id="pinbar" novalidate hidden>
-    <span class="label">Group PIN</span>
-    <div class="inline">
-      <div class="field"><label class="sub" for="pin-input">Enter the PIN to record games and edit players. Viewing doesn't need it.</label><input id="pin-input" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN"></div>
-      <button class="btn" type="submit">Unlock</button>
+  <button class="btn ghost" type="button" id="start-open">+ Start a ladder for your group</button>
+  <form class="start" id="start-form" hidden novalidate>
+    <h2>Start a ladder</h2>
+    <p class="hint">Free for any group. You choose the PIN; share it with your players so they can record games. Anyone can view the ladder.</p>
+    <div class="field"><label class="label" for="s-name">Group name</label><input id="s-name" maxlength="50" placeholder="e.g. Tavira Tuesday Group" autocomplete="off"></div>
+    <div class="field"><label class="label" for="s-slug">Web address</label><input id="s-slug" maxlength="31" placeholder="tavira-tuesday" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <p class="hint" id="s-preview">pickleballwanderers.com/ladder/…/</p>
+    <div class="row">
+      <div class="field"><label class="label" for="s-pin">Group PIN</label><input id="s-pin" type="password" inputmode="numeric" maxlength="8" placeholder="4–8 digits" autocomplete="new-password"></div>
+      <div class="field"><label class="label" for="s-pin2">Repeat PIN</label><input id="s-pin2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"></div>
     </div>
-    <div class="msg bad" id="pin-msg" role="status"></div>
+    <div class="trap" aria-hidden="true"><label for="s-website">Website</label><input id="s-website" tabindex="-1" autocomplete="off"></div>
+    <p class="hint">Keep a note of the PIN. If it's lost, contact Pickleball Wanderers to reset it.</p>
+    <button class="btn" type="submit" id="s-submit">Create ladder</button>
+    <div class="msg" id="s-msg" role="status"></div>
   </form>
-
-  <div id="status" class="notice" hidden></div>
-
-  <nav role="tablist">
-    <button role="tab" id="tab-board" aria-selected="true" data-view="board">Ladder</button>
-    <button role="tab" id="tab-teams" aria-selected="false" data-view="teams">Teams</button>
-    <button role="tab" id="tab-record" aria-selected="false" data-view="record">Record</button>
-    <button role="tab" id="tab-matches" aria-selected="false" data-view="matches">Games</button>
-    <button role="tab" id="tab-trends" aria-selected="false" data-view="trends">Trends</button>
-    <button role="tab" id="tab-players" aria-selected="false" data-view="players">Players</button>
-  </nav>
-
-  <section class="panel" id="view-board">
-    <ol class="board" id="board" hidden></ol>
-    <div class="empty" id="board-empty">No players yet. Add your group on the <strong>Players</strong> tab with their DUPR ratings, then record games to start the ladder.</div>
-    <details>
-      <summary>How the ratings work</summary>
-      <p>Each player starts at their DUPR converted to Elo (1000 + (DUPR − 3.5) × 200). Players without a DUPR start at the group average. In doubles the two partners' ratings are averaged into a team rating. Winners take points from losers; an upset or a big score margin moves more points. The first 5 games are provisional and move faster. Ratings are shown back on the DUPR scale, with the Elo number underneath.</p>
-    </details>
-  </section>
-
-  <section class="panel" id="view-teams" hidden>
-    <div class="empty" id="teams-empty">Add at least 4 players on the <strong>Players</strong> tab to make teams.</div>
-    <div class="panel" id="teams-body" hidden>
-      <form id="gen-form" novalidate>
-        <div class="toprow"><span class="label">Who's here today</span><span><span class="sub" id="here-count"></span> <button type="button" class="linkbtn" id="here-all">All</button><button type="button" class="linkbtn" id="here-none">None</button></span></div>
-        <div class="chips" id="here"></div>
-        <div class="inline">
-          <div class="field" style="flex:0 1 9rem"><label class="label" for="courts">Courts</label><select id="courts"></select></div>
-          <div class="field"><span class="label">Grouping</span>
-            <div class="seg" role="radiogroup" aria-label="Grouping">
-              <label><input type="radio" name="mix" id="mix-mixed" value="mixed" checked><span>Mixed levels</span></label>
-              <label><input type="radio" name="mix" id="mix-similar" value="similar"><span>Similar levels</span></label>
-            </div>
-          </div>
-        </div>
-        <button class="btn" type="submit" id="gen-btn">Make teams</button>
-        <div class="sub" id="gen-msg" role="status"></div>
-      </form>
-      <div id="rounds" class="panel"></div>
-      <div class="card">
-        <div class="rhead"><span class="rtitle">Standings</span><span class="sub" id="stand-note"></span></div>
-        <div class="seg" role="radiogroup" aria-label="Standings period">
-          <label><input type="radio" name="scope" id="scope-today" value="today" checked><span>Today</span></label>
-          <label><input type="radio" name="scope" id="scope-all" value="all"><span>All time</span></label>
-        </div>
-        <div class="tablewrap stand" id="standings"></div>
-        <p class="sub" style="margin:0">P played · W won · L lost · PF points for · PA points against · +/− point difference · Rating: change on the DUPR scale</p>
-      </div>
-      <button type="button" class="btn ghost" id="reset-session" style="align-self:flex-start" hidden>Clear rounds</button>
-      <details>
-        <summary>How teams are picked</summary>
-        <p>Within each court the four players are split into the two teams with the closest combined rating. Across rounds it avoids repeating partners and opponents, and anyone who sat out gets priority to play next. <strong>Mixed levels</strong> spreads players across courts; <strong>Similar levels</strong> puts the strongest players together on court 1, and so on down. Rounds are kept on this device only.</p>
-      </details>
-    </div>
-  </section>
-
-  <section class="panel" id="view-trends" hidden>
-    <div id="trends-body" hidden>
-      <div class="panel">
-        <span class="label">Players on the chart (up to 8)</span>
-        <div class="chips" id="chips"></div>
-        <div class="chartbox" id="chartbox"><div id="chart"></div><div class="tip" id="tip" hidden></div></div>
-        <details>
-          <summary>Show as table</summary>
-          <div class="tablewrap" id="trend-table"></div>
-        </details>
-      </div>
-    </div>
-    <div class="empty" id="trends-empty">The rating chart appears once the first game is recorded. Each point is a playing day, showing where everyone's rating stood at the end of it.</div>
-  </section>
-
-  <section class="panel" id="view-record" hidden>
-    <form id="match-form" novalidate>
-      <div class="seg" role="radiogroup" aria-label="Format">
-        <label><input type="radio" name="fmt" id="fmt-d" value="doubles" checked><span>Doubles</span></label>
-        <label><input type="radio" name="fmt" id="fmt-s" value="singles"><span>Singles</span></label>
-      </div>
-      <div class="teams">
-        <div class="team">
-          <span class="label">Team A</span>
-          <select id="a1" aria-label="Team A player 1"></select>
-          <select id="a2" aria-label="Team A player 2" class="dbl"></select>
-          <input id="sa" class="score" type="number" inputmode="numeric" min="0" max="30" placeholder="11" aria-label="Team A score">
-        </div>
-        <div class="team">
-          <span class="label">Team B</span>
-          <select id="b1" aria-label="Team B player 1"></select>
-          <select id="b2" aria-label="Team B player 2" class="dbl"></select>
-          <input id="sb" class="score" type="number" inputmode="numeric" min="0" max="30" placeholder="7" aria-label="Team B score">
-        </div>
-      </div>
-      <div class="field"><span class="label">Date played</span><input id="played" type="date"></div>
-      <button class="btn" type="submit">Save game</button>
-      <div class="msg" id="match-msg" role="status"></div>
-    </form>
-  </section>
-
-  <section class="panel" id="view-matches" hidden>
-    <div class="list" id="matches" hidden></div>
-    <div class="empty" id="matches-empty">No games recorded yet. Use the <strong>Record</strong> tab after your next session.</div>
-  </section>
-
-  <section class="panel" id="view-players" hidden>
-    <form id="player-form" novalidate>
-      <span class="label">Add a player</span>
-      <div class="inline">
-        <div class="field"><label class="label" for="pname">Name</label><input id="pname" autocomplete="off" placeholder="e.g. Louise"></div>
-        <div class="field" style="flex:0 1 7rem"><label class="label" for="pdupr">DUPR</label><input id="pdupr" type="number" step="0.001" min="2" max="8" inputmode="decimal" placeholder="optional"></div>
-        <button class="btn" type="submit">Add</button>
-      </div>
-      <div class="msg" id="player-msg" role="status"></div>
-    </form>
-    <div class="list" id="players" hidden></div>
-    <p class="sub">Changing someone's DUPR resets their starting point; every game is replayed from it.</p>
-  </section>
 </div>
-
 <script>
 (() => {
+  const list = document.getElementById("list"), empty = document.getElementById("empty");
+  const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+  function show(ladders) {
+    list.replaceChildren();
+    for (const l of ladders) {
+      const li = document.createElement("li"), a = document.createElement("a");
+      a.href = "/ladder/" + l.slug + "/";
+      const left = document.createElement("div");
+      const name = document.createElement("div"); name.className = "name"; name.textContent = l.name;
+      const meta = document.createElement("div"); meta.className = "meta"; meta.textContent = plural(l.players, "player") + " · " + plural(l.games, "game");
+      left.append(name, meta);
+      const go = document.createElement("span"); go.className = "go"; go.textContent = "Open →";
+      a.append(left, go); li.append(a); list.append(li);
+    }
+    list.hidden = !ladders.length;
+    empty.hidden = !!ladders.length;
+    if (!ladders.length) empty.textContent = "No ladders yet.";
+  }
+  /* ---- start a ladder ---- */
   const $ = id => document.getElementById(id);
-  let players = new Map();
-  let matches = [];
-  let confirmId = null;
-
-  /* ---------- rating maths ---------- */
-  const toElo = d => 1000 + (d - 3.5) * 200;
-  const toDupr = e => 3.5 + (e - 1000) / 200;
-  const PROVISIONAL = 5;
-
-  function compute() {
-    const rated = [...players.values()].filter(p => typeof p.dupr === "number");
-    const def = rated.length ? rated.reduce((s, p) => s + toElo(p.dupr), 0) / rated.length : 1000;
-    const st = new Map();
-    for (const p of players.values()) {
-      const e = typeof p.dupr === "number" ? toElo(p.dupr) : def;
-      st.set(p.id, { elo: e, games: 0, w: 0, l: 0, hist: [e] });
-    }
-    const ordered = [...matches].sort((x, y) =>
-      String(x.playedAt).localeCompare(String(y.playedAt)) || (x.createdAt || 0) - (y.createdAt || 0));
-    const deltas = new Map();
-    const timeline = [{ date: null, vals: Object.fromEntries([...st].map(([id, s]) => [id, s.elo])) }];
-    const played = new Set();
-    for (const m of ordered) {
-      const ids = [...m.a, ...m.b];
-      if (!ids.every(id => st.has(id))) continue;
-      const ra = m.a.reduce((s, id) => s + st.get(id).elo, 0) / m.a.length;
-      const rb = m.b.reduce((s, id) => s + st.get(id).elo, 0) / m.b.length;
-      const ea = 1 / (1 + Math.pow(10, (rb - ra) / 400));
-      const aw = m.sa > m.sb ? 1 : 0;
-      const mult = 0.75 + Math.min(Math.abs(m.sa - m.sb), 11) / 12;
-      const d = {};
-      const apply = (id, actual, exp) => {
-        const s = st.get(id);
-        const k = s.games < PROVISIONAL ? 48 : 32;
-        const ch = k * mult * (actual - exp);
-        s.elo += ch; s.games++; actual ? s.w++ : s.l++;
-        s.hist.push(s.elo); d[id] = ch;
-      };
-      m.a.forEach(id => apply(id, aw, ea));
-      m.b.forEach(id => apply(id, 1 - aw, 1 - ea));
-      deltas.set(m.id, d);
-      ids.forEach(id => played.add(id));
-      let day = timeline[timeline.length - 1];
-      if (day.date !== m.playedAt) { day = { date: m.playedAt, vals: {} }; timeline.push(day); }
-      day.vals = Object.fromEntries([...played].map(id => [id, st.get(id).elo]));
-    }
-    // the start point only shows players who went on to play
-    for (const id of Object.keys(timeline[0].vals)) if (!played.has(id)) delete timeline[0].vals[id];
-    return { st, deltas, def, timeline };
-  }
-
-  /* ---------- helpers ---------- */
-  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
-  const nameOf = id => players.get(id)?.name || "Removed player";
-  const fmtD = e => toDupr(e).toFixed(2);
-  const sign = n => (n >= 0 ? "+" : "−") + Math.abs(toDupr(1000 + n) - 3.5).toFixed(2);
-  function setStatus(text, err) { const s = $("status"); s.hidden = !text; s.textContent = text || ""; s.classList.toggle("err", !!err); }
-  function msg(id, text, ok) { const m = $(id); m.textContent = text; m.className = "msg " + (ok ? "ok" : "bad"); }
-  function writeErr(e, target) {
-    if (e && e.code === "pin") { msg(target, "Enter the group PIN above to make changes.", false); showPinBar(true); }
-    else if (e && e.code === "invalid") msg(target, e.message || "That entry wasn't accepted.", false);
-    else if (e && e.code === "quota_exceeded") msg(target, "The ladder is full. Delete some old games to make room.", false);
-    else msg(target, "Couldn't save. Check your connection and try again.", false);
-  }
-
-  function spark(hist) {
-    const NS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(NS, "svg");
-    svg.setAttribute("viewBox", "0 0 64 24"); svg.setAttribute("class", "spark"); svg.setAttribute("aria-hidden", "true");
-    const h = hist.slice(-20);
-    if (h.length < 2) return svg;
-    const lo = Math.min(...h), hi = Math.max(...h), span = Math.max(hi - lo, 20);
-    const pts = h.map((v, i) => [2 + i * 60 / (h.length - 1), 21 - (v - lo) / span * 18]);
-    const line = document.createElementNS(NS, "polyline");
-    line.setAttribute("points", pts.map(p => p.map(n => n.toFixed(1)).join(",")).join(" "));
-    line.setAttribute("fill", "none"); line.setAttribute("stroke", "var(--court)"); line.setAttribute("stroke-width", "1.5");
-    line.setAttribute("stroke-linejoin", "round");
-    const dot = document.createElementNS(NS, "circle");
-    const last = pts[pts.length - 1];
-    dot.setAttribute("cx", last[0]); dot.setAttribute("cy", last[1]); dot.setAttribute("r", "2.5"); dot.setAttribute("fill", "var(--court)");
-    svg.append(line, dot);
-    return svg;
-  }
-
-  /* ---------- render ---------- */
-  /* ---------- trends chart ---------- */
-  let selected = [];          // [{id, slot}] — colour slot stays with the player while selected
-  let touched = false;
-  let lastTimeline = [];
-  const shortDate = d => { const x = new Date(d + "T12:00:00"); return isNaN(x) ? d : x.toLocaleDateString(undefined, { day: "numeric", month: "short" }); };
-  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
-  function renderTrends(st, timeline) {
-    lastTimeline = timeline;
-    const active = [...players.values()].filter(p => st.get(p.id)?.games > 0);
-    selected = selected.filter(s => active.some(p => p.id === s.id));
-    if (!touched && !selected.length) {
-      active.sort((a, b) => st.get(b.id).elo - st.get(a.id).elo).slice(0, 4).forEach((p, i) => selected.push({ id: p.id, slot: i }));
-    }
-    const has = timeline.length > 1;
-    $("trends-body").hidden = !has; $("trends-empty").hidden = has;
-    if (!has) return;
-
-    const chips = $("chips"); chips.replaceChildren();
-    active.sort((a, b) => a.name.localeCompare(b.name)).forEach(p => {
-      const sel = selected.find(s => s.id === p.id);
-      const b = el("button", "chip"); b.type = "button"; b.setAttribute("aria-pressed", sel ? "true" : "false");
-      const sw = el("span", "sw"); if (sel) sw.style.background = `var(--s${sel.slot})`;
-      b.append(sw, p.name);
-      b.addEventListener("click", () => {
-        touched = true;
-        if (sel) selected = selected.filter(s => s.id !== p.id);
-        else if (selected.length < 8) {
-          let slot = 0; while (selected.some(s => s.slot === slot)) slot++;
-          selected.push({ id: p.id, slot });
-        }
-        render();
-      });
-      chips.append(b);
-    });
-    drawChart();
-    drawTable();
-  }
-
-  function drawChart() {
-    const timeline = lastTimeline, box = $("chart");
-    $("tip").hidden = true;
-    if (!selected.length) { box.innerHTML = '<p class="sub" style="margin:40px 0;text-align:center">Pick players above to chart them.</p>'; return; }
-    const W = Math.max(280, Math.round(box.clientWidth || 600)), H = 240;
-    const labels = selected.length <= 4 && W >= 460;
-    const M = { l: 38, r: labels ? 78 : 14, t: 10, b: 26 };
-    const n = timeline.length;
-    const ser = selected.map(s => ({ ...s, name: nameOf(s.id),
-      pts: timeline.map((t, i) => t.vals[s.id] != null ? [i, toDupr(t.vals[s.id])] : null).filter(Boolean) }));
-    const ys = ser.flatMap(s => s.pts.map(p => p[1]));
-    let lo = Math.floor((Math.min(...ys) - 0.05) * 4) / 4, hi = Math.ceil((Math.max(...ys) + 0.05) * 4) / 4;
-    if (hi - lo < 0.5) { lo -= 0.25; hi += 0.25; }
-    const step = hi - lo > 2 ? 0.5 : 0.25;
-    const x = i => M.l + (n === 1 ? 0 : i * (W - M.l - M.r) / (n - 1));
-    const y = v => M.t + (hi - v) / (hi - lo) * (H - M.t - M.b);
-    let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Rating over time for selected players">`;
-    for (let v = lo; v <= hi + 1e-9; v += step) {
-      s += `<line x1="${M.l}" x2="${W - M.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/>`;
-      s += `<text x="${M.l - 6}" y="${y(v) + 4}" text-anchor="end">${v.toFixed(2)}</text>`;
-    }
-    s += `<line x1="${M.l}" x2="${W - M.r}" y1="${H - M.b}" y2="${H - M.b}" stroke="var(--axis)"/>`;
-    const maxTicks = Math.max(2, Math.floor((W - M.l - M.r) / 70));
-    const every = Math.max(1, Math.ceil((n - 1) / (maxTicks - 1)));
-    for (let i = 0; i < n; i += every) {
-      const anchor = i === 0 ? "start" : "middle";
-      s += `<text x="${x(i)}" y="${H - 8}" text-anchor="${anchor}">${i === 0 ? "Start" : esc(shortDate(timeline[i].date))}</text>`;
-    }
-    s += `<line id="xhair" y1="${M.t}" y2="${H - M.b}" stroke="var(--axis)" stroke-width="1" visibility="hidden"/>`;
-    const dots = n <= 24;
-    const ends = [];
-    for (const se of ser) {
-      const c = `var(--s${se.slot})`;
-      s += `<polyline fill="none" stroke="${c}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" points="${se.pts.map(p => x(p[0]).toFixed(1) + "," + y(p[1]).toFixed(1)).join(" ")}"/>`;
-      if (dots) se.pts.forEach(p => s += `<circle cx="${x(p[0])}" cy="${y(p[1])}" r="4" fill="${c}" stroke="var(--surface)" stroke-width="2"/>`);
-      const last = se.pts[se.pts.length - 1];
-      ends.push({ y: y(last[1]), name: se.name, x: x(last[0]) });
-    }
-    if (labels) {
-      ends.sort((a, b) => a.y - b.y);
-      for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 13) ends[i].y = ends[i - 1].y + 13;
-      ends.forEach(e => { const nm = e.name.length > 10 ? e.name.slice(0, 9) + "…" : e.name; s += `<text class="dl" x="${W - M.r + 8}" y="${e.y + 4}">${esc(nm)}</text>`; });
-    }
-    s += `<rect id="hit" x="${M.l - 10}" y="0" width="${W - M.l - M.r + 20}" height="${H}" fill="transparent"/></svg>`;
-    box.innerHTML = s;
-
-    const svg = box.querySelector("svg"), hit = box.querySelector("#hit"), xh = box.querySelector("#xhair"), tip = $("tip");
-    const show = ev => {
-      const r = svg.getBoundingClientRect(), scale = W / r.width;
-      const px = (ev.clientX - r.left) * scale;
-      const i = n === 1 ? 0 : Math.max(0, Math.min(n - 1, Math.round((px - M.l) / ((W - M.l - M.r) / (n - 1)))));
-      xh.setAttribute("x1", x(i)); xh.setAttribute("x2", x(i)); xh.setAttribute("visibility", "visible");
-      tip.replaceChildren(el("div", "td", i === 0 ? "Starting ratings" : shortDate(timeline[i].date)));
-      ser.map(se => ({ se, v: timeline[i].vals[se.id] })).filter(o => o.v != null).sort((a, b) => b.v - a.v).forEach(({ se, v }) => {
-        const row = el("div", "tr"); const left = el("span"); left.style.display = "flex"; left.style.alignItems = "center"; left.style.gap = "6px";
-        const sw = el("span", "sw"); sw.style.background = `var(--s${se.slot})`;
-        left.append(sw, se.name); row.append(left, el("span", null, fmtD(v))); tip.append(row);
-      });
-      tip.hidden = false;
-      const bx = $("chartbox").getBoundingClientRect();
-      const left = x(i) / scale + (r.left - bx.left);
-      const tw = tip.offsetWidth;
-      tip.style.left = Math.max(4, Math.min(bx.width - tw - 4, left + 12 > bx.width - tw - 4 ? left - tw - 12 : left + 12)) + "px";
-      tip.style.top = "14px";
-    };
-    hit.addEventListener("pointermove", show);
-    hit.addEventListener("pointerdown", show);
-    hit.addEventListener("pointerleave", () => { tip.hidden = true; xh.setAttribute("visibility", "hidden"); });
-  }
-
-  function drawTable() {
-    const t = lastTimeline, wrap = $("trend-table");
-    if (!selected.length) { wrap.replaceChildren(); return; }
-    const table = el("table"), head = el("tr");
-    head.append(el("th", null, "Date"));
-    selected.forEach(s => head.append(el("th", null, nameOf(s.id))));
-    table.append(head);
-    t.forEach((d, i) => {
-      const tr = el("tr"); tr.append(el("td", null, i === 0 ? "Start" : shortDate(d.date)));
-      selected.forEach(s => tr.append(el("td", null, d.vals[s.id] != null ? fmtD(d.vals[s.id]) : "–")));
-      table.append(tr);
-    });
-    wrap.replaceChildren(table);
-  }
-
-  let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (!$("view-trends").hidden && lastTimeline.length > 1) drawChart(); }, 150); });
-
-  /* ---------- fair teams ---------- */
-  let lastSt = new Map();
-  const SKEY = "pb-session-v1";
-  let sess = { here: [], courts: 0, mode: "mixed", rounds: [] };
-  try { const raw = localStorage.getItem(SKEY); if (raw) sess = { ...sess, ...JSON.parse(raw) }; } catch (e) {}
-  const saveSess = () => { try { localStorage.setItem(SKEY, JSON.stringify(sess)); } catch (e) {} };
-  const eloOf = id => lastSt.get(id)?.elo ?? 1000;
-  const teamElo = t => t.reduce((s, id) => s + eloOf(id), 0) / t.length;
-  const winChance = (a, b) => 1 / (1 + Math.pow(10, (teamElo(b) - teamElo(a)) / 400));
-  const pk = (x, y) => x < y ? x + "|" + y : y + "|" + x;
-  const shuffle = arr => { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
-  const courtCount = () => { const max = Math.floor(sess.here.length / 4); return Math.min(sess.courts || max, max); };
-
-  function sessionHistory() {
-    const partners = new Map(), opps = new Map(), sat = new Map();
-    const inc = (m, k) => m.set(k, (m.get(k) || 0) + 1);
-    for (const r of sess.rounds) {
-      r.sit.forEach(id => inc(sat, id));
-      for (const c of r.courts) {
-        inc(partners, pk(...c.a)); inc(partners, pk(...c.b));
-        c.a.forEach(x => c.b.forEach(y => inc(opps, pk(x, y))));
-      }
-    }
-    return { partners, opps, sat };
-  }
-
-  function bestSplit(four, h) {
-    const [p, q, r, s] = four;
-    let best = null;
-    for (const [a, b] of [[[p, q], [r, s]], [[p, r], [q, s]], [[p, s], [q, r]]]) {
-      const diff = Math.abs(teamElo(a) - teamElo(b));
-      const rep = (h.partners.get(pk(...a)) || 0) + (h.partners.get(pk(...b)) || 0);
-      let opp = 0; a.forEach(x => b.forEach(y => opp += h.opps.get(pk(x, y)) || 0));
-      const cost = diff + 80 * rep + 12 * opp;
-      if (!best || cost < best.cost) best = { a, b, cost };
-    }
-    return best;
-  }
-
-  function makeRound() {
-    const courts = courtCount();
-    if (!courts) return;
-    const h = sessionHistory();
-    const order = shuffle([...sess.here]).sort((x, y) => (h.sat.get(x) || 0) - (h.sat.get(y) || 0));
-    const sitN = sess.here.length - courts * 4;
-    // players who have sat out least sit out next
-    const sit = order.slice(0, sitN), playing = order.slice(sitN);
-    let best = null;
-    for (let t = 0; t < 600; t++) {
-      const o = shuffle([...playing]);
-      let cost = 0; const cs = [];
-      for (let c = 0; c < courts; c++) {
-        const four = o.slice(c * 4, c * 4 + 4);
-        const b = bestSplit(four, h); cost += b.cost;
-        if (sess.mode === "similar") { const e = four.map(eloOf); cost += 0.8 * (Math.max(...e) - Math.min(...e)); }
-        cs.push({ a: b.a, b: b.b });
-      }
-      if (!best || cost < best.cost) best = { cost, courts: cs };
-    }
-    best.courts.sort((x, y) => teamElo([...y.a, ...y.b]) - teamElo([...x.a, ...x.b]));
-    sess.rounds.push({ courts: best.courts, sit });
-    saveSess();
-  }
-
-  function prefill(c) {
-    $("fmt-d").checked = true; syncFmt();
-    $("a1").value = c.a[0]; $("a2").value = c.a[1]; $("b1").value = c.b[0]; $("b2").value = c.b[1];
-    $("sa").value = ""; $("sb").value = ""; $("played").value = today(); $("match-msg").textContent = "";
-    $("tab-record").click();
-    $("sa").focus();
-  }
-
-  function roundCard(r, i) {
-    const card = el("div", "card");
-    const head = el("div", "rhead");
-    head.append(el("span", "rtitle", `Round ${i + 1}`));
-    if (r.sit.length) head.append(el("span", "sub", "Sitting out: " + r.sit.map(nameOf).join(", ")));
-    card.append(head);
-    r.courts.forEach((c, ci) => {
-      if (!c.a.concat(c.b).every(id => players.has(id))) return;
-      const ct = el("div", "court");
-      ct.append(el("span", "label", `Court ${ci + 1}`));
-      const pa = winChance(c.a, c.b);
-      const line = (t, p) => { const d = el("div", "tline"); d.append(el("span", null, t.map(nameOf).join(" & ")), el("span", "pct", Math.round(p * 100) + "%")); return d; };
-      ct.append(line(c.a, pa), el("div", "vs", "vs"), line(c.b, 1 - pa));
-      const rec = el("button", "btn ghost", "Record result"); rec.type = "button";
-      rec.addEventListener("click", () => prefill(c));
-      ct.append(rec);
-      card.append(ct);
-    });
-    return card;
-  }
-
-  let loaded = false;
-  function renderTeams() {
-    if (!loaded) return;
-    sess.here = sess.here.filter(id => players.has(id));
-    sess.rounds = sess.rounds.filter(r => Array.isArray(r.courts));
-    const ok = players.size >= 4;
-    $("teams-empty").hidden = ok; $("teams-body").hidden = !ok;
-    if (!ok) return;
-    const wrap = $("here"); wrap.replaceChildren();
-    [...players.values()].sort((a, b) => a.name.localeCompare(b.name)).forEach(p => {
-      const on = sess.here.includes(p.id);
-      const b = el("button", "chip"); b.type = "button"; b.setAttribute("aria-pressed", on ? "true" : "false");
-      const sw = el("span", "sw"); if (on) sw.style.background = "var(--court)";
-      b.append(sw, p.name);
-      b.addEventListener("click", () => { sess.here = on ? sess.here.filter(id => id !== p.id) : [...sess.here, p.id]; saveSess(); render(); });
-      wrap.append(b);
-    });
-    $("here-count").textContent = `${sess.here.length} here ·`;
-    const max = Math.floor(sess.here.length / 4), cs = $("courts");
-    cs.replaceChildren();
-    if (!max) cs.append(new Option("–", "0"));
-    for (let i = 1; i <= max; i++) cs.append(new Option(i === 1 ? "1 court" : `${i} courts`, String(i)));
-    cs.value = String(courtCount()); cs.disabled = !max;
-    $("mix-" + (sess.mode === "similar" ? "similar" : "mixed")).checked = true;
-    const btn = $("gen-btn");
-    btn.textContent = sess.rounds.length ? "Next round" : "Make teams"; btn.disabled = !max;
-    const sitN = max ? sess.here.length - courtCount() * 4 : 0;
-    $("gen-msg").textContent = !max ? "Pick at least 4 players who are here." : sitN ? `${sitN} will sit out each round, taking turns.` : "";
-
-    const rw = $("rounds"); rw.replaceChildren();
-    const n = sess.rounds.length;
-    if (n) {
-      rw.append(roundCard(sess.rounds[n - 1], n - 1));
-      if (n > 1) {
-        const d = el("details"); d.append(el("summary", null, `Earlier rounds (${n - 1})`));
-        const box = el("div", "earlier");
-        for (let i = n - 2; i >= 0; i--) box.append(roundCard(sess.rounds[i], i));
-        d.append(box); rw.append(d);
-      }
-    }
-    const rs = $("reset-session");
-    rs.hidden = !n;
-    rs.className = confirmId === "session" ? "btn danger" : "btn ghost";
-    rs.textContent = confirmId === "session" ? "Confirm clear" : "Clear rounds";
-  }
-
-  let standScope = "today";
-  function renderStandings(deltas) {
-    const day = today();
-    const list = standScope === "today" ? matches.filter(m => m.playedAt === day) : matches;
-    const rows = new Map();
-    const get = id => { if (!rows.has(id)) rows.set(id, { id, p: 0, w: 0, l: 0, pf: 0, pa: 0, d: 0 }); return rows.get(id); };
-    for (const m of list) {
-      const dm = deltas.get(m.id); if (!dm) continue;
-      const add = (ids, f, a) => ids.forEach(id => { const r = get(id); r.p++; f > a ? r.w++ : r.l++; r.pf += f; r.pa += a; r.d += dm[id] || 0; });
-      add(m.a, m.sa, m.sb); add(m.b, m.sb, m.sa);
-    }
-    const sorted = [...rows.values()].sort((x, y) => y.w - x.w || (y.pf - y.pa) - (x.pf - x.pa) || x.p - y.p);
-    const n = list.filter(m => deltas.has(m.id)).length;
-    $("stand-note").textContent = n ? `${n} game${n === 1 ? "" : "s"}` : "";
-    const wrap = $("standings");
-    if (!sorted.length) { wrap.replaceChildren(el("div", "none", standScope === "today" ? "No games recorded today yet. Results appear here as they're saved." : "No games recorded yet.")); return; }
-    const table = el("table"), head = el("tr");
-    ["Player", "P", "W", "L", "Win %", "PF", "PA", "+/−", "Rating"].forEach(h => head.append(el("th", null, h)));
-    table.append(head);
-    for (const r of sorted) {
-      const tr = el("tr");
-      const diff = r.pf - r.pa;
-      tr.append(el("td", null, nameOf(r.id)), el("td", null, r.p), el("td", null, r.w), el("td", null, r.l),
-        el("td", null, Math.round(r.w / r.p * 100) + "%"), el("td", null, r.pf), el("td", null, r.pa),
-        el("td", null, (diff > 0 ? "+" : diff < 0 ? "−" : "") + Math.abs(diff)));
-      const rc = el("td", r.d >= 0 ? "up" : "down", sign(r.d));
-      tr.append(rc);
-      table.append(tr);
-    }
-    wrap.replaceChildren(table);
-  }
-
-  function render() {
-    const { st, deltas, timeline } = compute();
-    lastSt = st;
-    renderTeams();
-    if (loaded && players.size >= 4) renderStandings(deltas);
-    renderTrends(st, timeline);
-    // leaderboard
-    const board = $("board"); board.replaceChildren();
-    const rows = [...players.values()].map(p => ({ p, s: st.get(p.id) })).sort((x, y) => y.s.elo - x.s.elo);
-    rows.forEach(({ p, s }, i) => {
-      const li = el("li", "row");
-      li.append(el("span", "rank", String(i + 1)));
-      const n = el("div", "name", p.name);
-      if (s.games < PROVISIONAL) n.append(el("span", "prov", "prov"));
-      const sub = el("div", "sub", `${s.w}–${s.l}` + (typeof p.dupr === "number" ? ` · started ${p.dupr.toFixed(2)}` : " · no DUPR"));
-      n.append(sub);
-      li.append(n, spark(s.hist));
-      const r = el("div", "rating", fmtD(s.elo));
-      r.append(el("small", null, "Elo " + Math.round(s.elo)));
-      li.append(r);
-      board.append(li);
-    });
-    board.hidden = !rows.length; $("board-empty").hidden = !!rows.length;
-
-    // matches
-    const list = $("matches"); list.replaceChildren();
-    const recent = [...matches].sort((x, y) =>
-      String(y.playedAt).localeCompare(String(x.playedAt)) || (y.createdAt || 0) - (x.createdAt || 0));
-    for (const m of recent) {
-      const d = deltas.get(m.id) || {};
-      const row = el("div", "match");
-      const side = (ids, pts, won) => {
-        const s = el("div", "side" + (won ? " won" : ""));
-        const who = el("span", "who", ids.map(nameOf).join(" & "));
-        const ch = d[ids[0]];
-        if (ch != null) { who.append(" "); who.append(el("span", "delta " + (ch >= 0 ? "up" : "down"), sign(ch))); }
-        s.append(who, el("span", "pts", String(pts)));
-        return s;
-      };
-      const col = el("div"); col.style.display = "flex"; col.style.flexDirection = "column"; col.style.gap = "4px"; col.style.minWidth = "0";
-      col.append(side(m.a, m.sa, m.sa > m.sb), side(m.b, m.sb, m.sb > m.sa));
-      row.append(col);
-      const meta = el("div", "meta");
-      const dt = new Date(m.playedAt + "T12:00:00");
-      meta.append(el("span", null, isNaN(dt) ? m.playedAt : dt.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" })));
-      const del = el("button", confirmId === m.id ? "btn danger" : "btn ghost", confirmId === m.id ? "Confirm delete" : "Delete");
-      del.type = "button";
-      del.addEventListener("click", async () => {
-        if (confirmId !== m.id) { confirmId = m.id; render(); return; }
-        confirmId = null;
-        try { await api("DELETE", "/ladder/api/matches/" + m.id); await refresh(); } catch (e) { if (e.code === "pin") showPinBar(true); setStatus(e.code === "pin" ? "Enter the group PIN to delete games." : "Couldn't delete that game. Try again.", true); render(); }
-      });
-      meta.append(del);
-      row.append(meta);
-      list.append(row);
-    }
-    list.hidden = !recent.length; $("matches-empty").hidden = !!recent.length;
-
-    // players
-    const pl = $("players"); pl.replaceChildren();
-    const used = new Set(matches.flatMap(m => [...m.a, ...m.b]));
-    [...players.values()].sort((x, y) => x.name.localeCompare(y.name)).forEach(p => {
-      const r = el("div", "prow");
-      r.append(el("span", "name", p.name));
-      const inp = el("input"); inp.type = "number"; inp.step = "0.001"; inp.min = "2"; inp.max = "8";
-      inp.id = "dupr-" + p.id; inp.placeholder = "DUPR"; inp.setAttribute("aria-label", "DUPR for " + p.name);
-      inp.value = typeof p.dupr === "number" ? String(p.dupr) : "";
-      const save = el("button", "btn ghost", "Save"); save.type = "button";
-      save.addEventListener("click", async () => {
-        const v = inp.value.trim() === "" ? null : Number(inp.value);
-        if (v !== null && !(v >= 2 && v <= 8)) { msg("player-msg", "DUPR should be between 2.0 and 8.0.", false); return; }
-        try { await api("PATCH", "/ladder/api/players/" + p.id, { dupr: v }); await refresh(); msg("player-msg", `Updated ${p.name}.`, true); }
-        catch (e) { writeErr(e, "player-msg"); }
-      });
-      r.append(inp, save);
-      if (!used.has(p.id)) {
-        const del = el("button", confirmId === p.id ? "btn danger" : "btn ghost", confirmId === p.id ? "Confirm" : "Remove");
-        del.type = "button";
-        del.addEventListener("click", async () => {
-          if (confirmId !== p.id) { confirmId = p.id; render(); return; }
-          confirmId = null;
-          try { await api("DELETE", "/ladder/api/players/" + p.id); await refresh(); } catch (e) { writeErr(e, "player-msg"); render(); }
-        });
-        r.append(del);
-      }
-      pl.append(r);
-    });
-    pl.hidden = !players.size;
-
-    // selects
-    const sorted = [...players.values()].sort((x, y) => x.name.localeCompare(y.name));
-    for (const id of ["a1", "a2", "b1", "b2"]) {
-      const s = $(id), keep = s.value;
-      s.replaceChildren(new Option("Choose player", ""));
-      sorted.forEach(p => s.append(new Option(p.name, p.id)));
-      if ([...s.options].some(o => o.value === keep)) s.value = keep;
-    }
-  }
-
-  /* ---------- tabs ---------- */
-  document.querySelectorAll("nav button").forEach(b => b.addEventListener("click", () => {
-    document.querySelectorAll("nav button").forEach(x => x.setAttribute("aria-selected", x === b ? "true" : "false"));
-    ["board", "teams", "record", "matches", "trends", "players"].forEach(v => $("view-" + v).hidden = v !== b.dataset.view);
-    confirmId = null; render();
-  }));
-
-  /* ---------- forms ---------- */
-  const today = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
-  $("played").value = today();
-  const isDoubles = () => $("fmt-d").checked;
-  const syncFmt = () => document.querySelectorAll(".dbl").forEach(s => s.hidden = !isDoubles());
-  document.querySelectorAll('input[name="fmt"]').forEach(r => r.addEventListener("change", syncFmt));
-
-  $("match-form").addEventListener("submit", async ev => {
+  const slugify = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 31);
+  let slugTouched = false;
+  const preview = () => { $("s-preview").textContent = "pickleballwanderers.com/ladder/" + (slugify($("s-slug").value) || "…") + "/"; };
+  $("start-open").addEventListener("click", () => { $("start-form").hidden = false; $("start-open").hidden = true; $("s-name").focus(); });
+  $("s-name").addEventListener("input", () => { if (!slugTouched) $("s-slug").value = slugify($("s-name").value); preview(); });
+  $("s-slug").addEventListener("input", () => { slugTouched = true; preview(); });
+  $("start-form").addEventListener("submit", async ev => {
     ev.preventDefault();
-    const a = isDoubles() ? [$("a1").value, $("a2").value] : [$("a1").value];
-    const b = isDoubles() ? [$("b1").value, $("b2").value] : [$("b1").value];
-    const all = [...a, ...b];
-    const sa = Number($("sa").value), sb = Number($("sb").value);
-    if (all.some(x => !x)) return msg("match-msg", "Pick every player on both teams.", false);
-    if (new Set(all).size !== all.length) return msg("match-msg", "A player can only appear once in a game.", false);
-    if ($("sa").value === "" || $("sb").value === "" || !Number.isInteger(sa) || !Number.isInteger(sb) || sa < 0 || sb < 0)
-      return msg("match-msg", "Enter both scores as whole numbers.", false);
-    if (sa === sb) return msg("match-msg", "Scores can't be tied; pickleball needs a winner.", false);
-    const playedAt = $("played").value || today();
+    const m = $("s-msg"); m.textContent = "";
+    const name = $("s-name").value.trim(), slug = slugify($("s-slug").value), pin = $("s-pin").value.trim();
+    if (name.length < 3) return m.textContent = "Give your ladder a name of at least 3 characters.";
+    if (slug.length < 2) return m.textContent = "Choose a web address of at least 2 letters or numbers.";
+    if (!/^\d{4,8}$/.test(pin)) return m.textContent = "The PIN should be 4 to 8 digits.";
+    if (pin !== $("s-pin2").value.trim()) return m.textContent = "The two PINs don't match.";
+    $("s-submit").disabled = true;
     try {
-      await api("POST", "/ladder/api/matches", { a, b, sa, sb, playedAt }); await refresh();
-      msg("match-msg", "Game saved. Ratings updated.", true);
-      $("sa").value = ""; $("sb").value = "";
-    } catch (e) { writeErr(e, "match-msg"); }
+      const r = await fetch("/ladder-create", { method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ name, slug, pin, website: $("s-website").value }) });
+      let d = {}; try { d = await r.json(); } catch (e) {}
+      if (!r.ok) { m.textContent = r.status === 429 ? "Too many attempts. Wait a minute and try again." : (d.error || "Couldn't create the ladder. Try again."); return; }
+      try { localStorage.setItem("ladder-pin:" + d.slug, pin); localStorage.removeItem("ladder-list"); } catch (e) {}
+      location.href = "/ladder/" + d.slug + "/";
+    } catch (e) { m.textContent = "Couldn't reach the server. Check your connection."; }
+    finally { $("s-submit").disabled = false; }
   });
 
-  $("player-form").addEventListener("submit", async ev => {
-    ev.preventDefault();
-    const name = $("pname").value.trim();
-    const dv = $("pdupr").value.trim();
-    const dupr = dv === "" ? null : Number(dv);
-    if (!name) return msg("player-msg", "Enter a name.", false);
-    if ([...players.values()].some(p => p.name.toLowerCase() === name.toLowerCase())) return msg("player-msg", `${name} is already on the ladder.`, false);
-    if (dupr !== null && !(dupr >= 2 && dupr <= 8)) return msg("player-msg", "DUPR should be between 2.0 and 8.0.", false);
-    try {
-      await api("POST", "/ladder/api/players", { name, dupr }); await refresh();
-      msg("player-msg", `Added ${name}.`, true);
-      $("pname").value = ""; $("pdupr").value = ""; $("pname").focus();
-    } catch (e) { writeErr(e, "player-msg"); }
-  });
-
-  $("gen-form").addEventListener("submit", ev => {
-    ev.preventDefault();
-    confirmId = null; makeRound(); render();
-    $("rounds").scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-  $("courts").addEventListener("change", e => { sess.courts = Number(e.target.value) || 0; saveSess(); render(); });
-  document.querySelectorAll('input[name="mix"]').forEach(r => r.addEventListener("change", e => { sess.mode = e.target.value; saveSess(); }));
-  document.querySelectorAll('input[name="scope"]').forEach(r => r.addEventListener("change", e => { standScope = e.target.value; render(); }));
-  $("here-all").addEventListener("click", () => { sess.here = [...players.keys()]; saveSess(); render(); });
-  $("here-none").addEventListener("click", () => { sess.here = []; saveSess(); render(); });
-  $("reset-session").addEventListener("click", () => {
-    if (confirmId !== "session") { confirmId = "session"; render(); return; }
-    confirmId = null; sess.rounds = []; saveSess(); render();
-  });
-
-  /* ---------- PIN ---------- */
-  let pin = "";
-  try { pin = localStorage.getItem("ladder-pin") || ""; } catch (e) {}
-  function showPinBar(force) {
-    const bar = $("pinbar");
-    bar.hidden = !!pin && !force;
-    $("lock-state").hidden = !pin;
-    if (force) { $("pin-input").focus(); }
-  }
-  $("pin-form").addEventListener("submit", async ev => {
-    ev.preventDefault();
-    const v = $("pin-input").value.trim();
-    if (!v) return;
-    try {
-      const r = await fetch("/ladder/api/check-pin", { method: "POST", headers: { "x-ladder-pin": v } });
-      if (r.ok) {
-        pin = v; try { localStorage.setItem("ladder-pin", v); } catch (e) {}
-        $("pin-input").value = ""; $("pin-msg").textContent = "";
-        $("pinbar").hidden = true; $("lock-state").hidden = false;
-      } else $("pin-msg").textContent = r.status === 429 ? "Too many tries. Wait a minute and try again." : "That PIN isn't right.";
-    } catch (e) { $("pin-msg").textContent = "Couldn't check the PIN. Check your connection."; }
-  });
-  $("lock-btn").addEventListener("click", () => {
-    pin = ""; try { localStorage.removeItem("ladder-pin"); } catch (e) {}
-    showPinBar(false);
-  });
-
-  /* ---------- server ---------- */
-  async function api(method, path, body) {
-    let r;
-    try {
-      r = await fetch(path, { method, headers: { "content-type": "application/json", "x-ladder-pin": pin }, body: body ? JSON.stringify(body) : undefined });
-    } catch (e) { throw { code: "network" }; }
-    if (r.status === 401) { pin = ""; try { localStorage.removeItem("ladder-pin"); } catch (e) {} throw { code: "pin" }; }
-    if (!r.ok) { let m = ""; try { m = (await r.json()).error; } catch (e) {} throw { code: r.status === 400 || r.status === 409 ? "invalid" : "server", message: m }; }
-    return r.json();
-  }
-  let lastSig = "";
-  async function refresh() {
-    try {
-      const r = await fetch("/ladder/api/state", { cache: "no-store" });
-      if (!r.ok) throw 0;
-      const data = await r.json();
-      const sig = JSON.stringify(data);
-      loaded = true; setStatus("");
-      if (sig === lastSig) return;
-      lastSig = sig;
-      players = new Map(data.players.map(p => [p.id, p]));
-      matches = data.matches.filter(m => Array.isArray(m.a) && Array.isArray(m.b));
-      try { localStorage.setItem("ladder-cache", sig); } catch (e) {}
-      render();
-    } catch (e) {
-      if (!loaded) setStatus("Can't reach the ladder right now. Showing the last saved copy if there is one.", true);
-    }
-  }
-
-  /* ---------- start ---------- */
-  syncFmt();
-  try {
-    const c = localStorage.getItem("ladder-cache");
-    if (c) { const d = JSON.parse(c); players = new Map(d.players.map(p => [p.id, p])); matches = d.matches; lastSig = c; }
-  } catch (e) {}
-  render();
-  showPinBar(false);
-  refresh();
-  setInterval(() => { if (document.visibilityState === "visible") refresh(); }, 15000);
-  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") refresh(); });
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("/ladder/sw.js", { scope: "/ladder/" }).catch(() => {});
+  try { const c = localStorage.getItem("ladder-list"); if (c) show(JSON.parse(c)); } catch (e) {}
+  fetch("/ladder-api/_list").then(r => { if (!r.ok) throw 0; return r.json(); }).then(d => {
+    show(d.ladders);
+    try { localStorage.setItem("ladder-list", JSON.stringify(d.ladders)); } catch (e) {}
+  }).catch(() => { if (list.hidden) empty.textContent = "Couldn't load the ladders. Check your connection and refresh."; });
 })();
 </script>
-
 </body>
 </html>
