@@ -80,9 +80,9 @@ async function handleAdmin(req: Request, parts: string[]) {
     const body = await readBody(req);
     const pw = String(body?.password ?? "");
     if (pw.length < 8) return bad("Use at least 8 characters for the admin password.");
+    if ((await s.get("_admin/config")) !== null) return bad("An admin password has already been set.", 409);
     const sa = salt();
-    const { modified } = await s.setJSON("_admin/config", { salt: sa, hash: await sha256(sa + pw) }, { onlyIfNew: true });
-    if (!modified) return bad("An admin password has already been set.", 409);
+    await s.setJSON("_admin/config", { salt: sa, hash: await sha256(sa + pw) });
     return json({ ok: true });
   }
 
@@ -120,8 +120,7 @@ async function handleAdmin(req: Request, parts: string[]) {
     if (await getMeta(slug)) return bad("A ladder with that address already exists.", 409);
     const ps = salt();
     const meta: Meta = { name, pinSalt: ps, pinHash: await sha256(ps + body.pin), createdAt: Date.now() };
-    const { modified } = await s.setJSON(`${slug}/meta`, meta, { onlyIfNew: true });
-    if (!modified) return bad("A ladder with that address already exists.", 409);
+    await s.setJSON(`${slug}/meta`, meta);
     return json({ slug, name }, 201);
   }
 
