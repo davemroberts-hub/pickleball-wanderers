@@ -1,10 +1,7 @@
 # Keep server code and project files from being served as pages
 /netlify/*        /404.html               404!
 /package.json     /404.html               404!
-# The original ladder now lives at /ladder/main/
-/ladder           /ladder/main/           301!
-/ladder/          /ladder/main/           301!
 # Private admin page for creating ladders
 /ladder/admin     /ladder/admin.html      200
-# Every other /ladder/<name>/ address shows the ladder app
-/ladder/:slug/    /ladder/index.html      200
+# Every /ladder/<name>/ address shows that ladder (the list of ladders is /ladder/)
+/ladder/:slug/    /ladder/app.html        200

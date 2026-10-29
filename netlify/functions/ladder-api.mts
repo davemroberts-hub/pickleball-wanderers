@@ -148,6 +148,27 @@ async function handleAdmin(req: Request, parts: string[]) {
   return bad("Not found", 404);
 }
 
+/* ---------------- public directory ---------------- */
+async function publicList() {
+  const { blobs } = await store().list();
+  const counts = new Map<string, { players: number; games: number; hasMeta: boolean }>();
+  for (const b of blobs) {
+    const [slug, kind] = b.key.split("/");
+    if (slug.startsWith("_")) continue;
+    const c = counts.get(slug) || { players: 0, games: 0, hasMeta: false };
+    if (kind === "players") c.players++; else if (kind === "matches") c.games++; else if (kind === "meta") c.hasMeta = true;
+    counts.set(slug, c);
+  }
+  const ladders = [];
+  for (const [slug, c] of counts) {
+    if (!c.hasMeta && !(slug === "main" && (c.players || c.games))) continue;
+    const meta = await getMeta(slug);
+    if (meta) ladders.push({ slug, name: meta.name, players: c.players, games: c.games });
+  }
+  ladders.sort((a, b) => a.name.localeCompare(b.name));
+  return new Response(JSON.stringify({ ladders }), { headers: { "content-type": "application/json", "cache-control": "public, max-age=60" } });
+}
+
 /* ---------------- one ladder ---------------- */
 async function handleLadder(req: Request, slug: string, resource: string, id: string | undefined) {
   const s = store();
@@ -242,6 +263,7 @@ export default async (req: Request) => {
   const parts = url.pathname.replace(/^\/ladder-api\/?/, "").split("/").filter(Boolean);
   const [first, ...rest] = parts;
   if (first === "_admin") return handleAdmin(req, rest);
+  if (first === "_list" && req.method === "GET") return publicList();
   if (!first || !SLUG_RE.test(first)) return bad("Not found", 404);
   const [resource, id] = rest;
   return handleLadder(req, first, resource, id);
