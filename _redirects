@@ -1,0 +1,3 @@
+# Keep server code and project files from being served as pages
+/netlify/*      /404.html  404!
+/package.json   /404.html  404!
