@@ -844,7 +844,7 @@ details p{margin:8px 0 0}
     $("lock-state").hidden = !pin;
     if (force) { $("pin-input").focus(); }
   }
-  $("pin-form").addEventListener("submit", async ev => {
+  $("pinbar").addEventListener("submit", async ev => {
     ev.preventDefault();
     const v = $("pin-input").value.trim();
     if (!v) return;
