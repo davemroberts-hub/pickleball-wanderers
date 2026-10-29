@@ -942,3 +942,9 @@
   height:100%;
   border:0;
 }
+
+/* ---------- Nav: collapse to the menu button a little earlier now there are 7 links ---------- */
+@media (max-width:1080px){
+  .nav-links{ display:none; }
+  .nav-toggle{ display:flex; }
+}
