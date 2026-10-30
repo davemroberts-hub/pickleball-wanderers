@@ -205,6 +205,27 @@ async function handleLadder(req: Request, slug: string, resource: string, id: st
   if (method === "POST" || method === "PATCH") { body = await readBody(req); if (!body) return bad("Invalid request"); }
 
   if (resource === "players") {
+    // Add a pasted list in one go. Skips names already on the ladder (or repeated in the list).
+    if (method === "POST" && id === "bulk") {
+      const list = Array.isArray(body.players) ? body.players : null;
+      if (!list || !list.length) return bad("No players to add.");
+      if (list.length > 100) return bad("Add up to 100 players at a time.");
+      const existing = await readAll<Player>(P + "players/");
+      const seen = new Set(existing.map(p => p.name.toLowerCase()));
+      const added: Player[] = [], skipped: string[] = [];
+      let n = 0;
+      for (const item of list) {
+        const name = String(item?.name ?? "").replace(/\s+/g, " ").trim().slice(0, 40);
+        const dupr = item?.dupr === undefined ? null : item.dupr;
+        if (!name || !validDupr(dupr)) { skipped.push(name || "(blank)"); continue; }
+        if (seen.has(name.toLowerCase())) { skipped.push(name); continue; }
+        seen.add(name.toLowerCase());
+        const p: Player = { id: newId() + (n++).toString(36), name, dupr, createdAt: Date.now() + n };
+        added.push(p);
+      }
+      for (let i = 0; i < added.length; i += 20) await Promise.all(added.slice(i, i + 20).map(p => s.setJSON(`${P}players/${p.id}`, p)));
+      return json({ added: added.length, skipped }, 201);
+    }
     if (method === "POST" && !id) {
       const name = String(body.name ?? "").trim().slice(0, 40);
       if (!name) return bad("Enter a name.");
