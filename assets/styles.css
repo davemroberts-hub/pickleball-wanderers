@@ -975,6 +975,13 @@
   font-weight:600;
   font-size:17px;
 }
+.best-for-item p{
+  margin:2px 0 0;
+  font-size:14.5px;
+  line-height:1.5;
+  color:var(--ink-soft);
+  max-width:none;
+}
 
 /* ---------- TIPS LIST (new — added for Boston guide) ---------- */
 .tips-list{
