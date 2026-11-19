@@ -1162,3 +1162,4 @@ footer .foot-links{ flex-wrap:wrap; gap:14px 24px; }
 }
 /* Breadcrumb nav sits inside .wrap already; drop the doubled side padding */
 .wrap .breadcrumb-trail{ padding-left:0; padding-right:0; }
+.venue .tips-list .tip p{ max-width:66ch; }
