@@ -948,3 +948,179 @@
   .nav-links{ display:none; }
   .nav-toggle{ display:flex; }
 }
+
+/* =====================================================================
+   PREMIUM REFRESH (Nov 2026)
+   Same brand palette and fonts, used with more restraint: lighter display
+   weights, more air, hairline rules instead of heavy outlines, softer
+   radii on media, and photo-led guide cards. Overrides earlier rules.
+   ===================================================================== */
+:root{
+  --ink:#18201C;
+  --ink-soft:#545A54;
+  --court:#1E4E41;
+  --court-deep:#13352C;
+  --night:#142420;
+  --line: rgba(24,32,28,0.16);
+  --line-soft: rgba(24,32,28,0.09);
+  --radius:10px;
+  --radius-sm:6px;
+}
+body{ font-size:16px; line-height:1.6; text-rendering:optimizeLegibility; }
+h1,h2,h3{ font-weight:500; letter-spacing:-0.015em; font-optical-sizing:auto; }
+a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:4px; }
+.wrap{ max-width:1200px; padding:0 40px; }
+
+/* Header: sticky, quiet */
+header{
+  position:sticky; top:0; z-index:50; padding:18px 0 0;
+  background:rgba(239,234,224,0.88);
+  -webkit-backdrop-filter:saturate(1.4) blur(14px); backdrop-filter:saturate(1.4) blur(14px);
+}
+.nav{ align-items:center; padding-bottom:16px; border-bottom:1px solid var(--line-soft); }
+.brand .name{ font-size:21px; font-weight:600; }
+.brand .tag{ font-size:10px; letter-spacing:0.12em; opacity:0.8; }
+.nav-links{ gap:30px; padding-top:0; font-size:14px; }
+.nav-links a{ color:var(--ink-soft); border:0; transition:color .15s ease; }
+.nav-links a:hover{ color:var(--ink); }
+.nav-cta{
+  font-size:13px; font-weight:500; padding:10px 18px; border:0; border-radius:999px;
+  background:var(--court); color:var(--paper);
+}
+.nav-cta:hover{ background:var(--court-deep); color:var(--paper); }
+.nav-toggle{ border:1px solid var(--line); border-radius:999px; width:42px; height:38px; }
+.mobile-menu a{ border-bottom:1px solid var(--line-soft); }
+
+/* Buttons & links */
+.btn-primary{
+  font-size:14.5px; font-weight:500; letter-spacing:0.01em;
+  padding:15px 28px; border-radius:999px;
+  transition:background .2s ease;
+}
+.match-link{ border-bottom-width:1px; text-underline-offset:3px; }
+
+/* Hero */
+.hero{ padding:88px 0 80px; grid-template-columns:1.1fr 0.9fr; gap:72px; align-items:center; }
+.hero-byline{ font-size:14px; line-height:1.55; color:var(--ink-soft); max-width:52ch; margin-bottom:28px; }
+.hero-byline .byline-names{
+  display:block; margin-bottom:6px; font-family:'IBM Plex Mono', monospace;
+  font-size:11px; letter-spacing:0.14em; color:var(--stamp); text-transform:uppercase;
+}
+.hero h1{ font-size:clamp(46px, 6.2vw, 86px); font-weight:400; line-height:0.98; letter-spacing:-0.03em; max-width:13ch; }
+.hero-sub{ margin-top:28px; font-size:18px; line-height:1.6; max-width:44ch; }
+.hero-actions{ margin-top:36px; }
+.hero-photo img{ aspect-ratio:4/5; object-position:center 20%; border-radius:var(--radius); }
+.hero-photo-cap{ margin-top:16px; font-size:13.5px; border-left:1px solid var(--gold); }
+
+/* Boarding pass */
+.pass{ margin:0 0 24px; background:var(--night); border-radius:var(--radius); }
+.pass-seg{ padding:30px 36px; }
+.pass-seg .city{ font-size:34px; font-weight:400; letter-spacing:-0.02em; }
+.pass-foot{ padding:16px 36px; }
+
+/* Sections */
+.section{ padding:112px 0; border-top:1px solid var(--line-soft); }
+.section-head{ margin-bottom:56px; align-items:flex-end; }
+.section-head h2{ font-size:clamp(34px, 4.4vw, 56px); font-weight:400; line-height:1; letter-spacing:-0.025em; max-width:14ch; }
+.section-head .desc{ font-size:16px; max-width:38ch; }
+
+/* Photo-led guide cards */
+.guide-teasers{ gap:56px 32px; }
+.guide-teaser{
+  border:0; border-radius:0; padding:0; background:none;
+  display:flex; flex-direction:column;
+}
+.guide-teaser:hover{ transform:none; }
+.teaser-media{
+  aspect-ratio:4/3; overflow:hidden; border-radius:var(--radius);
+  background:var(--paper-2); margin-bottom:18px;
+}
+.teaser-media img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .6s cubic-bezier(.2,.7,.2,1); }
+.guide-teaser:hover .teaser-media img{ transform:scale(1.035); }
+.teaser-media--blank{
+  display:flex; align-items:flex-end; padding:22px;
+  background:var(--court);
+}
+.teaser-media--blank span{ font-family:'Fraunces', serif; font-size:40px; letter-spacing:-0.02em; color:var(--paper); line-height:1; }
+.guide-teaser .guide-top{ margin-bottom:8px; align-items:baseline; }
+.guide-teaser h3{ font-size:24px; font-weight:500; }
+.guide-teaser .country{ font-size:10.5px; letter-spacing:0.1em; }
+.guide-teaser p{ font-size:14.5px; line-height:1.6; }
+.guide-teaser .read-more{ margin-top:14px; font-size:11.5px; letter-spacing:0.02em; color:var(--court); }
+.guide-teaser:hover .read-more{ text-decoration:underline; text-underline-offset:3px; }
+@media (max-width:1080px){ .guide-teasers{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:640px){ .guide-teasers{ grid-template-columns:1fr; gap:44px; } }
+
+/* Stamps */
+.pillars{ gap:56px; }
+.stamp-badge{ width:104px; height:104px; border-width:1.5px; }
+.stamp h3{ font-size:26px; font-weight:500; }
+.stamp p{ font-size:15px; }
+
+/* Route */
+.route-stop{ min-width:140px; }
+.route-stop .city{ font-weight:500; font-size:18px; }
+.route-track{ border-top:1px dashed var(--line); }
+
+/* Panels: cards, tables, embeds */
+.rating-card, .match-card, .guide-card{
+  border:1px solid var(--line); border-radius:var(--radius); padding:26px 28px;
+}
+.stat-table-wrap{ border:1px solid var(--line); border-radius:var(--radius); }
+.stat-table th{ border-bottom:1px solid var(--line); }
+.stat-table tr.totals td{ border-top:1px solid var(--line); }
+.video-embed{ border:0; border-radius:var(--radius); }
+.reel div{ border-radius:var(--radius-sm); }
+.reel div::after{ border:0; }
+.split{ gap:80px; }
+.split .col + .col{ border-left:1px solid var(--line-soft); padding-left:80px; }
+.split h3{ font-size:28px; font-weight:500; }
+.split p{ font-size:15.5px; }
+.partner-list span{ border-color:var(--line); padding:9px 16px; }
+.data-teaser{ border:1px solid var(--line) !important; border-radius:var(--radius) !important; padding:28px 30px !important; }
+
+/* Guide pages */
+.guide-hero{ padding:64px 0 56px; border-bottom:1px solid var(--line-soft); }
+.guide-hero h1{ font-size:clamp(44px, 6vw, 80px); font-weight:400; letter-spacing:-0.03em; }
+.guide-hero .summary{ font-size:17px; line-height:1.65; }
+.guide-hero .hero-img{ max-height:560px; border-radius:var(--radius); margin-top:36px; }
+.venue{ padding:48px 0; border-bottom:1px solid var(--line-soft); }
+.venue h3{ font-size:26px; font-weight:500; }
+.venue p{ font-size:15.5px; }
+.local-note{ border-radius:0 var(--radius-sm) var(--radius-sm) 0; padding:20px 22px; }
+
+/* CTA + footer */
+.cta{ padding:120px 0 96px; border-top:1px solid var(--line-soft); }
+.cta h2{ font-size:clamp(38px, 5.4vw, 72px); font-weight:400; letter-spacing:-0.03em; line-height:1; max-width:14ch; }
+footer{ border-top:1px solid var(--line-soft); }
+footer.site-footer{
+  background:var(--night); color:rgba(239,234,224,0.7); border:0;
+  border-radius:var(--radius); padding:36px 40px; margin-bottom:40px; align-items:center;
+}
+footer.site-footer a:hover{ color:var(--paper); }
+footer .foot-links{ flex-wrap:wrap; gap:14px 24px; }
+
+@media (max-width:860px){
+  .wrap{ padding:0 22px; }
+  .hero{ grid-template-columns:1fr; padding:40px 0 56px; gap:36px; }
+  .hero h1{ font-size:clamp(40px, 11vw, 56px); }
+  .hero-sub{ font-size:16.5px; }
+  .hero-actions{ flex-wrap:wrap; gap:14px; }
+  .split{ gap:48px; }
+  .hero-photo img{ aspect-ratio:4/3; }
+  .section{ padding:80px 0; }
+  .section-head{ flex-direction:column; align-items:flex-start; gap:16px; margin-bottom:40px; }
+  .split .col + .col{ border-left:none; border-top:1px solid var(--line-soft); padding-left:0; }
+  .pass-seg, .pass-foot{ padding-left:24px; padding-right:24px; }
+  .cta{ padding:88px 0 64px; }
+  footer.site-footer{ padding:28px 24px; }
+}
+@media (max-width:560px){
+  .nav-cta{ display:none; }
+  .brand .name{ font-size:19px; }
+  .pass-seg .city{ font-size:28px; }
+}
+@media (prefers-reduced-motion:reduce){
+  html{ scroll-behavior:auto; }
+  .teaser-media img{ transition:none; }
+}
