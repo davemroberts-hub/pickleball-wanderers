@@ -100,6 +100,31 @@
   "mainEntityOfPage": "https://pickleballwanderers.com/guides/malaga"
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://pickleballwanderers.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Guides",
+      "item": "https://pickleballwanderers.com/guides/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Malaga & the Costa Del Sol"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -112,8 +137,8 @@
         <div class="tag">NO FIXED COURT · SINCE 2023</div>
       </div>
       <nav class="nav-links">
-        <a href="/#route">The route</a>
         <a href="/#guides">Guides</a>
+        <a href="/#route">The route</a>
         <a href="/#film">Film &amp; analysis</a>
         <a href="/analysis/">The data</a>
         <a href="/#partner">Partner with us</a>
@@ -122,17 +147,21 @@
       <button class="nav-toggle" onclick="document.getElementById('mobileMenu').classList.toggle('open')" aria-label="Toggle menu">☰</button>
     </div>
     <nav class="mobile-menu" id="mobileMenu">
-      <a href="/#route">The route</a>
       <a href="/#guides">Guides</a>
+      <a href="/#route">The route</a>
       <a href="/#film">Film &amp; analysis</a>
       <a href="/analysis/">The data</a>
       <a href="/#partner">Partner with us</a>
     </nav>
   </header>
 
+  <nav class="wrap breadcrumb-trail" aria-label="Breadcrumb">
+    <a href="/">Home</a><span class="sep">/</span><a href="/guides/">Guides</a><span class="sep">/</span><span>Málaga &amp; the Costa del Sol</span>
+  </nav>
+
   <section class="guide-hero">
     <a class="breadcrumb" href="/#route">← Back to the route</a>
-    <h1>Malaga & the Costa Del Sol</h1>
+    <h1>Málaga &amp; the Costa del Sol</h1>
     <span class="country-tag">SPAIN</span>
     <h2>Where to Play Pickleball in Málaga</h2>
     <p class="summary">Pickleball on the Costa del Sol is still young but growing fast — from dedicated pay-to-play courts out at Mijas to small members-only setups closer to the city centre. We played at Daryl Collins Tennis Academy in Mijas (listed as Pickleball Mijas Fuengirola), and analyzed the match with PBVision.</p>
@@ -312,8 +341,8 @@
   <footer>
     <span>© Pickleball Wanderers</span>
     <div class="foot-links">
-      <a href="/#route">The route</a>
       <a href="/#guides">Guides</a>
+      <a href="/#route">The route</a>
       <a href="/#partner">Partner with us</a>
       <a href="https://instagram.com/pickleballwanderers" target="_blank" rel="noopener">Instagram</a>
       <a href="mailto:pickleballwanderers@gmail.com">Email</a>

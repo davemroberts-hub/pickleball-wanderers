@@ -1161,3 +1161,5 @@ footer .foot-links{ flex-wrap:wrap; gap:14px 24px; }
   html{ scroll-behavior:auto; }
   .teaser-media img{ transition:none; }
 }
+/* Breadcrumb nav sits inside .wrap already; drop the doubled side padding */
+.wrap .breadcrumb-trail{ padding-left:0; padding-right:0; }
