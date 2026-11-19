@@ -5,3 +5,8 @@
 /ladder/admin     /ladder/admin.html      200
 # Every /ladder/<name>/ address shows that ladder (the list of ladders is /ladder/)
 /ladder/:slug/    /ladder/app.html        200
+# Old duplicate pages -> real guides
+/guides/seattle-1       /guides/seattle    301
+/guides/seattle-1.html  /guides/seattle    301
+/algarve                /guides/algarve    301
+/algarve.html           /guides/algarve    301

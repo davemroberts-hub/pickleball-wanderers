@@ -966,6 +966,7 @@
   --radius:10px;
   --radius-sm:6px;
 }
+img{ max-width:100%; height:auto; }
 body{ font-size:16px; line-height:1.6; text-rendering:optimizeLegibility; }
 h1,h2,h3{ font-weight:500; letter-spacing:-0.015em; font-optical-sizing:auto; }
 a:focus-visible, button:focus-visible{ outline:2px solid var(--gold); outline-offset:3px; border-radius:4px; }
@@ -1088,6 +1089,42 @@ header{
 .venue h3{ font-size:26px; font-weight:500; }
 .venue p{ font-size:15.5px; }
 .local-note{ border-radius:0 var(--radius-sm) var(--radius-sm) 0; padding:20px 22px; }
+
+/* Guide-page components (verdict table, best-for grid, tips). These lived only in the
+   unused styles.css, so guide pages were rendering them unstyled. */
+.verdict-table{
+  width:100%; border-collapse:separate; border-spacing:0; margin-top:24px;
+  font-family:'IBM Plex Mono', monospace; font-size:13px;
+  border:1px solid var(--line); border-radius:var(--radius); overflow:hidden;
+}
+.verdict-table td{ padding:14px 20px; border-bottom:1px solid var(--line-soft); }
+.verdict-table td:first-child{ color:var(--ink-soft); }
+.verdict-table td:last-child{ text-align:right; }
+.verdict-table .stars{ color:var(--gold); letter-spacing:2px; font-size:14px; }
+.verdict-table tr.wanderers-rating td{
+  border-bottom:0; background:var(--court); color:var(--paper);
+  font-weight:500; font-size:14px; padding-top:16px; padding-bottom:16px;
+}
+.verdict-note{ margin-top:18px; font-size:15.5px; line-height:1.65; color:var(--ink-soft); max-width:64ch; }
+.verdict-note strong{ color:var(--ink); }
+.best-for-grid{ display:grid; grid-template-columns:1fr; gap:12px; margin-top:22px; }
+.best-for-item{
+  border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:14px 18px; background:var(--paper-2);
+  display:flex; flex-direction:column; gap:4px;
+}
+.best-for-item .mono{ font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); }
+.best-for-item strong{ font-family:'Fraunces', serif; font-weight:500; font-size:18px; }
+.best-for-item p{ margin:2px 0 0; font-size:14.5px; line-height:1.5; color:var(--ink-soft); }
+.best-for-item a{ text-decoration:none; }
+.best-for-item:has(> a){ padding:0; background:none; }
+.best-for-item > a{ display:block; padding:14px 18px; border-radius:inherit; transition:background .15s ease; }
+.best-for-item > a:hover{ background:var(--paper-2); }
+.best-for-item > a::after{ content:" →"; font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--court); }
+.tips-list{ margin-top:22px; display:flex; flex-direction:column; gap:24px; }
+.tips-list .tip h4{ font-family:'Fraunces', serif; font-weight:500; font-size:18px; margin:0 0 6px; color:var(--ink); }
+.tips-list .tip p{ font-size:15px; line-height:1.6; color:var(--ink-soft); max-width:46ch; }
+.split h2{ font-size:clamp(26px, 3vw, 34px); font-weight:400; letter-spacing:-0.02em; }
 
 /* CTA + footer */
 .cta{ padding:120px 0 96px; border-top:1px solid var(--line-soft); }
