@@ -200,5 +200,13 @@
     </div>
   </footer>
 </div>
+  <script>
+    (function(){
+      var m = document.getElementById('mobileMenu');
+      if(!m) return;
+      m.addEventListener('click', function(e){ if(e.target.closest('a')) m.classList.remove('open'); });
+      window.addEventListener('pageshow', function(){ m.classList.remove('open'); });
+    })();
+  </script>
 </body>
 </html>
