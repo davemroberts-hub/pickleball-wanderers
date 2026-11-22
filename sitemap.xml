@@ -90,6 +90,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://pickleballwanderers.com/guides/york</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://pickleballwanderers.com/guides/bengaluru</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
