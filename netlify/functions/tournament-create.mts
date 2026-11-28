@@ -90,8 +90,10 @@ export default async (req: Request) => {
   const meta = { name, pinSalt: ps, pinHash: await sha256(ps + pin), createdAt: Date.now() };
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = newCode();
-    const { modified } = await s.setJSON(`${code}/meta`, meta, { onlyIfNew: true });
-    if (!modified) continue;
+    // The site's @netlify/blobs (v8) has no conditional writes, so check first.
+    // Codes are random from ~887 million options, so a clash in between is not a real risk.
+    if ((await s.get(`${code}/meta`)) !== null) continue;
+    await s.setJSON(`${code}/meta`, meta);
     await s.setJSON(`${code}/setup`, setup);
     return json({ code, name }, 201);
   }
