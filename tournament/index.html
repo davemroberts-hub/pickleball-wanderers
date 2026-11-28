@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Tournaments · Pickleball Wanderers</title>
+<meta name="description" content="Run a pickleball tournament: fixed or rotating partners, round robin groups and knockouts, with live scores anyone with the PIN can enter.">
+<meta name="theme-color" content="#1d5c9e">
+<script>if(/^\/tournament\/[a-z0-9]{6}\/?$/.test(location.pathname))document.write('<meta name="robots" content="noindex">')</script>
+<link rel="icon" href="/ladder/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Tournament draw sheet in the site's court-blue look: blue band + tabs, white cards, ball-yellow for winners. */
+:root{--bg:#f3f6f8;--panel:#fff;--ink:#14212e;--mute:#5d6d7c;--line:#d6dee5;--court:#1d5c9e;--court2:#174b82;--ball:#d8ea3a;--ballink:#1d2a05;--warn:#b4441c;
+--display:"Barlow Condensed","Arial Narrow",sans-serif;--body:"Figtree",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1720;--panel:#17222e;--ink:#e6edf3;--mute:#93a3b2;--line:#2a3846;--court:#1d5c9e;--court2:#143e6c;--warn:#ff9a6b;color-scheme:dark}}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);overflow-x:clip}
+h1,h2,h3,.tabs button{font-family:var(--display);letter-spacing:.01em}
+header{background:var(--court);color:#fff;position:relative;overflow:hidden;padding:max(18px,env(safe-area-inset-top)) max(5vw,16px) 0}
+header svg{position:absolute;right:-40px;top:-10px;width:420px;height:240px;opacity:.2;pointer-events:none}
+.back{position:relative;color:#d6e2f3;text-decoration:none;font-size:.9rem}
+.back:hover{color:#fff}
+header h1{margin:10px 0 0;font-size:clamp(32px,6vw,48px);line-height:1.05;text-wrap:balance;position:relative}
+header p{margin:6px 0 18px;color:#d6e2f3;position:relative;max-width:62ch}
+.tabs{display:flex;gap:4px;overflow-x:auto;position:sticky;top:0;z-index:5;background:var(--court2);padding:0 max(5vw,16px)}
+.tabs button{flex:none;background:none;border:0;color:#cfdbef;font-size:20px;font-weight:600;padding:12px 16px;min-height:48px;border-bottom:4px solid transparent;cursor:pointer}
+.tabs button[aria-selected=true]{color:#fff;border-color:var(--ball)}
+.status{position:sticky;top:48px;z-index:4;text-align:center;font-size:13px;padding:2px;color:var(--mute)}
+.status.bad{color:var(--warn);font-weight:600;background:var(--panel)}
+main{max-width:1180px;margin:0 auto;padding:20px max(4vw,14px) 64px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:clamp(16px,3vw,28px);max-width:720px;margin-bottom:20px}
+.f{display:block;font-weight:600;margin:0 0 16px}
+input,select,textarea,button{font:inherit;color:inherit}
+.f input,.f select,.f textarea{display:block;width:100%;margin-top:6px;padding:10px 12px;min-height:44px;font-size:16px;font-weight:400;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+textarea{resize:vertical;line-height:1.45}
+:focus-visible{outline:3px solid var(--ball);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));gap:0 16px}
+.seg{border:0;padding:0;margin:0 0 18px}.seg legend{font-weight:600;padding:0;margin-bottom:6px}
+.seg div{display:flex;flex-wrap:wrap;gap:6px}
+.seg label{flex:1 1 160px;position:relative}
+.seg input{position:absolute;opacity:0}
+.seg span{display:flex;align-items:center;justify-content:center;text-align:center;min-height:46px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:var(--bg)}
+.seg input:checked+span{background:var(--court);border-color:var(--court);color:#fff;font-weight:600}
+.seg input:focus-visible+span{outline:3px solid var(--ball);outline-offset:2px}
+fieldset.ko{border:1px solid var(--line);border-radius:12px;padding:14px 16px 0;margin:0 0 18px}
+fieldset.ko legend{font-weight:700;padding:0 6px}
+.chk{display:flex;gap:10px;align-items:flex-start;margin:0 0 18px}.chk input{width:22px;height:22px;margin-top:2px;flex:none}
+.hint{color:var(--mute);font-size:15px;margin:-8px 0 16px}
+.err{color:var(--warn);font-weight:600;min-height:1.5em;margin:0 0 12px}
+.go,.ghost,.btn{border-radius:10px;min-height:46px;padding:10px 18px;cursor:pointer;font-weight:600;border:1px solid var(--court)}
+.go{background:var(--court);color:#fff;font-size:18px;width:100%}
+.go:disabled{opacity:.45;cursor:not-allowed}
+.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn{background:var(--ball);color:var(--ballink);border-color:var(--ball)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 18px}
+.row .f{flex:1 1 180px;margin:0}
+h2{font-size:30px;line-height:1.1;margin:28px 0 12px}h2:first-child,.panel h2{margin-top:0}
+h3{font-size:22px;margin:0 0 8px}
+.progress{height:10px;background:var(--line);border-radius:6px;overflow:hidden;margin:6px 0 4px;max-width:420px}
+.progress i{display:block;height:100%;background:var(--ball)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 4px}
+.chips button{min-height:40px;padding:6px 14px;border-radius:20px;border:1px solid var(--line);background:var(--panel);cursor:pointer}
+.chips button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px 12px}
+.card.done{border-color:color-mix(in srgb,var(--ball) 70%,var(--line))}
+.meta{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--mute);margin-bottom:6px;font-weight:500}
+.meta .warn{color:var(--warn);font-weight:700}
+.side{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:8px}
+.side .nm{flex:1;font-weight:500;overflow-wrap:anywhere}
+.side.win{background:var(--ball);color:var(--ballink)}.side.win .tag{color:var(--ballink)}
+.side input{width:54px;height:44px;text-align:center;font:700 22px var(--display);border:1px solid var(--line);border-radius:8px;background:var(--bg);flex:none}
+.side.win input{background:#fff;color:#111;border-color:#b7c82c}
+.gh{display:flex;justify-content:flex-end;gap:8px;padding:0 6px;font-size:12px;color:var(--mute)}.gh span{width:48px;text-align:center}
+.ko3 .side input{width:48px}
+.tag{font-size:12px;font-weight:700;color:var(--mute);margin-right:4px}
+.bye{color:var(--mute);font-style:italic}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;background:var(--panel);border-radius:12px;overflow:hidden}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-size:13px;color:var(--mute);font-weight:600}
+th:nth-child(2),td:nth-child(2){text-align:left;white-space:normal}
+th:first-child,td:first-child{text-align:center;width:2.5em}
+tr.q td{background:color-mix(in srgb,var(--ball) 22%,transparent)}
+.tables{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:20px}
+.bracket{display:grid;gap:22px}
+@media(min-width:900px){.bracket{grid-auto-flow:column;grid-auto-columns:minmax(290px,1fr);overflow-x:auto;align-items:start}}
+.champ{background:var(--ball);color:var(--ballink);border-radius:14px;padding:18px 20px;margin:0 0 20px}
+.champ h3{font-size:30px;margin:0}
+.empty{color:var(--mute);background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:24px;max-width:640px}
+.list{list-style:none;margin:0;padding:0}.list li+li{border-top:1px solid var(--line)}
+.list a{display:flex;justify-content:space-between;gap:12px;padding:12px 2px;color:inherit;text-decoration:none;font-weight:600}
+.list a span{color:var(--court);font-weight:600;white-space:nowrap}
+.link{font-weight:700;overflow-wrap:anywhere;font-size:18px}
+.code{font:700 28px var(--display);letter-spacing:.12em}
+.trap{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.sample{font-size:13px;color:var(--mute);margin:-10px 0 16px}
+@media(max-width:600px){header svg{width:300px;right:-80px}.tabs button{font-size:18px;padding:12px}}
+@media(prefers-reduced-motion:no-preference){.card,.side{transition:background .25s,border-color .25s}}
+</style>
+</head>
+<body>
+<header>
+<svg viewBox="0 0 420 240" fill="none" stroke="#fff" stroke-width="4" aria-hidden="true"><rect x="20" y="20" width="380" height="200"/><line x1="210" y1="20" x2="210" y2="220" stroke-width="6"/><line x1="150" y1="20" x2="150" y2="220"/><line x1="270" y1="20" x2="270" y2="220"/><line x1="20" y1="120" x2="150" y2="120"/><line x1="270" y1="120" x2="400" y2="120"/><circle cx="330" cy="70" r="14" fill="#d8ea3a" stroke="none"/></svg>
+<a class="back" href="/">← Pickleball Wanderers</a>
+<h1 id="title">Tournaments</h1>
+<p id="sub">Fixed or rotating partners, round robin groups and knockouts — with live scores anyone with the PIN can enter.</p>
+</header>
+<nav class="tabs" id="tabs" role="tablist" hidden></nav>
+<div class="status" id="status" aria-live="polite"></div>
+<main id="view"></main>
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const CODE=(location.pathname.match(/^\/tournament\/([a-z0-9]{6})\/?$/)||[])[1]||null;
+const API='/tournament-api/'+CODE;
+const DKEY='pbw-tourney-draft',RKEY='pbw-tourney-recent',PKEY='pbw-tourney-pin:'+CODE;
+const SAMPLE="Dave\nLouise\nRichard\nSam\nPriya\nTom\nAna\nJoão\nMia\nLeo\nKate\nBen";
+const freshSetup=()=>({name:'Saturday Slam',mode:'rotating',text:SAMPLE,format:'rrko',groups:'2',rounds:'',courts:'3',rrPts:'11',qual:'2',koPts:'11',koBo:'1',shuffle:true});
+let setup;try{setup=JSON.parse(ls.get(DKEY))}catch(e){}
+if(!setup||typeof setup.text!=='string')setup=freshSetup();
+const S={setup,t:null,tab:'matches',filter:ls.get('pbw-tourney-filter:'+CODE)||'all',name:''};
+let pin=CODE?ls.get(PKEY)||'':'',newPin='';
+const saveDraft=()=>ls.set(DKEY,JSON.stringify(S.setup));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const LET='ABCDEFGH';
+const autoRounds=n=>Math.min(n%4===0?n-1:n,12);
+const recent=()=>{try{return JSON.parse(ls.get(RKEY))||[]}catch(e){return[]}};
+const remember=(code,name)=>ls.set(RKEY,JSON.stringify([{code,name},...recent().filter(r=>r.code!==code)].slice(0,8)));
+const status=(txt,bad)=>{const s=$('#status');s.textContent=txt||'';s.className='status'+(bad?' bad':'')};
+
+/* ---------- setup ---------- */
+function parse(su){
+  const lines=su.text.split('\n').map(s=>s.trim()).filter(Boolean);
+  const split=l=>l.split(/\s*[&\/+]\s*/).map(s=>s.trim()).filter(Boolean);
+  if(su.mode==='rotating')return{players:lines.flatMap(split),teams:[]};
+  const teams=[],loose=[];
+  lines.forEach(l=>{const p=split(l);if(p.length>=2)teams.push(p.slice(0,2));else if(p[0])loose.push(p[0])});
+  for(let i=0;i+1<loose.length;i+=2)teams.push([loose[i],loose[i+1]]);
+  return{teams,players:teams.flat(),odd:loose.length%2?loose[loose.length-1]:null};
+}
+const weakPin=p=>/^(\d)\1+$/.test(p)||'0123456789'.includes(p)||'9876543210'.includes(p);
+function validate(){
+  const su=S.setup,p=parse(su),g=+su.groups,n=p.players.length,fixed=su.mode==='fixed',u=fixed?p.teams.length:n;
+  const low=p.players.map(x=>x.toLowerCase()),di=low.findIndex((x,i)=>low.indexOf(x)!==i);
+  const minG=Math.floor(u/g),Q=+su.qual;let msg='';
+  if(n>32)msg=`That's ${n} players — the maximum is 32.`;
+  else if(fixed&&p.odd)msg=`${p.odd} doesn't have a partner yet.`;
+  else if(di>=0)msg=`“${p.players[di]}” is entered twice — each name must be unique.`;
+  else if(p.players.some(x=>x.length>40))msg='Keep names under 40 characters.';
+  else if(!fixed&&minG<4)msg='Rotating partners needs at least 4 players in every group.';
+  else if(fixed&&minG<2)msg='Every group needs at least 2 teams.';
+  else if(su.format==='rrko'&&Q>minG)msg=`The smallest group has ${minG} ${fixed?'teams':'players'}, so ${Q} can't qualify from each.`;
+  else if(su.format==='rrko'&&fixed&&Q*g<2)msg='At least 2 teams must qualify for a knockout.';
+  else if(su.format==='rrko'&&!fixed&&(Q*g<4||(Q*g)%2))msg=`Knockout teams are made by pairing qualifiers, so total qualifiers (${Q*g}) must be even and at least 4.`;
+  else if(!/^\d{4,8}$/.test(newPin))msg='Choose a PIN of 4 to 8 digits for players to enter scores.';
+  else if(weakPin(newPin))msg='Choose a PIN that’s harder to guess than repeated or sequential digits.';
+  return{ok:!msg,msg,n,u,g,minG,p,fixed};
+}
+const sizes=(u,g)=>Array.from({length:g},(_,i)=>Math.floor(u/g)+(i<u%g?1:0));
+function rrTeams(ids){
+  const a=ids.slice();if(a.length%2)a.push(null);
+  const n=a.length,rounds=[];
+  for(let r=0;r<n-1;r++){const rd=[];for(let i=0;i<n/2;i++){const x=a[i],y=a[n-1-i];if(x!==null&&y!==null)rd.push([x,y])}rounds.push(rd);a.splice(1,0,a.pop())}
+  return rounds;
+}
+function rotating(ids,R){
+  const n=ids.length,k=Math.floor(n/4),P={},O={},sit={},key=(x,y)=>x<y?x+'-'+y:y+'-'+x,get=(M,x,y)=>M[key(x,y)]||0,rounds=[];
+  ids.forEach(i=>sit[i]=0);
+  for(let r=0;r<R;r++){
+    const pool=shuffle(ids.slice()).sort((x,y)=>sit[x]-sit[y]),ns=n-4*k;
+    pool.slice(0,ns).forEach(i=>sit[i]++);
+    const play=pool.slice(ns);let best=null,bc=Infinity;
+    for(let t=0;t<500&&bc>0;t++){
+      const p=shuffle(play.slice()),ms=[];let c=0;
+      for(let q=0;q<k;q++){
+        const [w,x,y,z]=p.slice(q*4,q*4+4);let bo=null,boc=Infinity;
+        for(const [A,B] of [[[w,x],[y,z]],[[w,y],[x,z]],[[w,z],[x,y]]]){
+          let cc=(get(P,A[0],A[1])+get(P,B[0],B[1]))*12;
+          A.forEach(a=>B.forEach(b=>{cc+=get(O,a,b)**2}));
+          if(cc<boc){boc=cc;bo=[A,B]}
+        }
+        c+=boc;ms.push(bo);
+      }
+      if(c<bc){bc=c;best=ms}
+    }
+    best.forEach(([A,B])=>{P[key(A[0],A[1])]=get(P,A[0],A[1])+1;P[key(B[0],B[1])]=get(P,B[0],B[1])+1;A.forEach(a=>B.forEach(b=>{O[key(a,b)]=get(O,a,b)+1}))});
+    rounds.push(best);
+  }
+  return rounds;
+}
+function build(v){
+  const su=S.setup,fixed=v.fixed,players=v.p.players.map((name,id)=>({id,name}));
+  const units=fixed?v.p.teams.map((t,i)=>({id:i,pids:[2*i,2*i+1]})):players.map(p=>({id:p.id,pids:[p.id]}));
+  const order=units.map(u=>u.id);if(su.shuffle)shuffle(order);
+  const g=v.g,groups=Array.from({length:g},(_,i)=>({name:LET[i],ids:[]}));
+  order.forEach((id,i)=>{const r=Math.floor(i/g),c=i%g;groups[r%2?g-1-c:c].ids.push(id)});
+  const per=groups.map(gr=>fixed?rrTeams(gr.ids).map(rd=>rd.map(([x,y])=>({ua:x,ub:y,a:units[x].pids,b:units[y].pids})))
+    :rotating(gr.ids,+su.rounds>0?Math.min(+su.rounds,40):autoRounds(gr.ids.length)).map(rd=>rd.map(([A,B])=>({a:A,b:B}))));
+  const courts=Math.max(1,+su.courts||1),maxR=Math.max(...per.map(r=>r.length)),matches=[];let rn=0;
+  for(let r=0;r<maxR;r++){
+    const all=[];per.forEach((rs,gi)=>(rs[r]||[]).forEach(m=>all.push({...m,g:gi})));
+    for(let i=0;i<all.length;i+=courts){rn++;all.slice(i,i+courts).forEach((m,k)=>matches.push({...m,id:matches.length,round:rn,court:k+1}))}
+  }
+  return{mode:su.mode,cfg:{...su},players,units,groups,matches};
+}
+async function create(){
+  const v=validate();if(!v.ok)return;
+  const btn=$('#go');btn.disabled=true;btn.textContent='Creating…';
+  try{
+    const r=await fetch('/tournament-create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name:S.setup.name,pin:newPin,website:$('#s-web').value,setup:build(v)})});
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||(r.status===429?'Too many tries — wait a minute and try again.':'Couldn’t create the tournament.'));
+    ls.set('pbw-tourney-pin:'+d.code,newPin);remember(d.code,d.name);
+    location.href='/tournament/'+d.code+'/';
+  }catch(e){$('#s-err').textContent=e.message||'Couldn’t reach the server — check your connection.';btn.disabled=false;btn.textContent='Create tournament'}
+}
+
+/* ---------- results ---------- */
+const pname=id=>S.t.players[id].name;
+const names=pids=>pids.map(pname).join(' & ');
+const uname=id=>S.t.mode==='fixed'?names(S.t.units[id].pids):pname(id);
+const done=m=>m.sa!==''&&m.sb!==''&&+m.sa!==+m.sb;
+const odd=(a,b,P)=>{const w=Math.max(a,b),l=Math.min(a,b);return !(w>=P&&w-l>=2&&(w===P||w-l===2))};
+const pct=r=>r.P?r.W/r.P:0,pdg=r=>r.P?(r.PF-r.PA)/r.P:0;
+const cmp=(x,y)=>(pct(y)-pct(x))||(pdg(y)-pdg(x))||(y.PF-x.PF)||uname(x.id).localeCompare(uname(y.id));
+function standings(gi){
+  const t=S.t,rows={};t.groups[gi].ids.forEach(id=>rows[id]={id,P:0,W:0,L:0,PF:0,PA:0});
+  const add=(r,f,a)=>{r.P++;r.PF+=f;r.PA+=a;f>a?r.W++:r.L++};
+  t.matches.filter(m=>m.g===gi&&done(m)).forEach(m=>{
+    const A=t.mode==='fixed'?[m.ua]:m.a,B=t.mode==='fixed'?[m.ub]:m.b;
+    A.forEach(id=>add(rows[id],+m.sa,+m.sb));B.forEach(id=>add(rows[id],+m.sb,+m.sa));
+  });
+  return Object.values(rows).sort(cmp);
+}
+function drawKO(){
+  const t=S.t,Q=+t.cfg.qual,q=[];
+  t.groups.forEach((g,gi)=>standings(gi).slice(0,Q).forEach((r,pos)=>q.push({...r,pos,g:gi})));
+  q.sort((x,y)=>x.pos-y.pos||cmp(x,y));
+  let teams;
+  if(t.mode==='fixed')teams=q.map(r=>({pids:t.units[r.id].pids,g:r.g,pos:r.pos,tag:LET[r.g]+(r.pos+1)}));
+  else{const n=q.length;teams=[];for(let i=0;i<n/2;i++)teams.push({pids:[q[i].id,q[n-1-i].id],g:-1,pos:i,tag:'#'+(i+1)})}
+  const B=2**Math.ceil(Math.log2(teams.length));let o=[1];
+  while(o.length<B){const m=o.length*2+1;o=o.flatMap(s=>[s,m-s])}
+  const s=o.map(k=>teams[k-1]||null);
+  if(t.mode==='fixed'&&t.groups.length>1){
+    const P=s.length/2,clash=(a,b)=>a&&b&&a.g===b.g;
+    for(let pass=0;pass<3;pass++)for(let i=0;i<P;i++){
+      if(!clash(s[2*i],s[2*i+1]))continue;let best=-1,bd=Infinity;
+      for(let j=0;j<P;j++){if(j===i||!s[2*j+1])continue;if(clash(s[2*i],s[2*j+1])||clash(s[2*j],s[2*i+1]))continue;
+        const d=Math.abs(s[2*j+1].pos-s[2*i+1].pos)*100+Math.abs(j-i);if(d<bd){bd=d;best=j}}
+      if(best>=0){const x=s[2*i+1];s[2*i+1]=s[2*best+1];s[2*best+1]=x}
+    }
+  }
+  return s;
+}
+const TBD={tbd:true};
+const real=x=>x&&!x.tbd;
+const tsig=x=>!x?'bye':x.tbd?'tbd':x.pids.join('.');
+const filled=x=>x&&x[0]!==''&&x[1]!==''&&x[0]!=null&&x[1]!=null;
+function koData(){
+  const t=S.t,ko=t.ko,R=Math.log2(ko.seeds.length),rounds=[];let cur=[];
+  for(let i=0;i<ko.seeds.length;i+=2)cur.push([ko.seeds[i],ko.seeds[i+1]]);
+  for(let r=0;r<R;r++){
+    const bo=t.cfg.koBo==='3'||(t.cfg.koBo==='f3'&&r===R-1)?3:1;
+    const ms=cur.map(([a,b],i)=>{
+      const id=r+'-'+i,sig=tsig(a)+'|'+tsig(b);let sc=ko.scores[id];if(!sc||sc.sig!==sig)sc={sig,g:[]};
+      let w=TBD,wa=0,wb=0;
+      if(a&&a.tbd||b&&b.tbd)w=TBD;else if(a&&!b)w=a;else if(b&&!a)w=b;
+      else{sc.g.forEach(x=>{if(filled(x)&&+x[0]!==+x[1])+x[0]>+x[1]?wa++:wb++});
+        const need=bo===3?2:1;if(wa>=need)w=a;else if(wb>=need)w=b}
+      return{id,a,b,sc,sig,bo,w,wa,wb};
+    });
+    rounds.push(ms);cur=[];for(let i=0;i<ms.length;i+=2)cur.push([ms[i].w,ms[i+1]?ms[i+1].w:null]);
+  }
+  return rounds;
+}
+const rname=(r,R)=>{const left=R-r;return left===1?'Final':left===2?'Semi-finals':left===3?'Quarter-finals':'Round of '+2**left};
+
+/* ---------- server sync ---------- */
+const local=new Set(),ver={};let lastRaw='',dirty=false,polling=null,inflight=false;
+async function api(path,method='GET',body){
+  const r=await fetch(API+path,{method,cache:'no-store',headers:{'content-type':'application/json','x-tournament-pin':pin},body:body?JSON.stringify(body):undefined});
+  if(r.status===401){pin='';ls.del(PKEY);stopPoll();renderPin('That PIN isn’t right for this tournament.');throw{code:'pin'}}
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw{code:r.status,msg:d.error};
+  return d;
+}
+function apply(d){
+  const keep={};if(S.t){S.t.matches.forEach(m=>{if(local.has('m'+m.id))keep['m'+m.id]=[m.sa,m.sb]});if(S.t.ko)Object.keys(S.t.ko.scores).forEach(k=>{if(local.has('k'+k))keep['k'+k]=S.t.ko.scores[k]})}
+  const st=d.setup;S.name=d.name;
+  const matches=st.matches.map(m=>{const k=keep['m'+m.id],sc=d.scores[m.id];return{...m,sa:k?k[0]:sc?sc.sa:'',sb:k?k[1]:sc?sc.sb:''}});
+  let ko=null;if(d.ko){const scores={...d.koscores};Object.keys(keep).filter(k=>k[0]==='k').forEach(k=>scores[k.slice(1)]=keep[k]);ko={seeds:d.ko.seeds,scores}}
+  S.t={...st,matches,ko};
+  remember(CODE,d.name);
+}
+async function refresh(force){
+  if(inflight)return;inflight=true;
+  try{const d=await api('/state');const raw=JSON.stringify([d.setup,d.ko,d.scores,d.koscores]);
+    if(force||raw!==lastRaw){lastRaw=raw;apply(d);if(isEditing())dirty=true;else render()}
+    if(!local.size)status('Live · updates every 15 seconds')}
+  catch(e){if(e.code==='pin')return;if(e.code===404){stopPoll();renderMissing();return}status('Offline — scores will sync when you reconnect',true)}
+  finally{inflight=false}
+}
+const isEditing=()=>{const a=document.activeElement;return a&&a.tagName==='INPUT'&&(a.dataset.m||a.dataset.ko)};
+function startPoll(){stopPoll();polling=setInterval(()=>{if(document.visibilityState==='visible')refresh()},15000)}
+function stopPoll(){if(polling)clearInterval(polling);polling=null}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&polling)refresh()});
+async function push(key){
+  const v=ver[key];status('Saving…');
+  try{
+    if(key[0]==='m'){const m=S.t.matches[+key.slice(1)];
+      if(done(m))await api('/score/'+m.id,'PUT',{sa:m.sa,sb:m.sb});else await api('/score/'+m.id,'DELETE')}
+    else{const id=key.slice(1),sc=S.t.ko.scores[id];await api('/koscore/'+id,'PUT',{sig:sc.sig,g:sc.g.map(x=>x||['',''])})}
+    if(ver[key]===v)local.delete(key);
+    status(local.size?'Saving…':'Saved');
+  }catch(e){if(e.code==='pin')return;status('Not saved — retrying…',true);setTimeout(()=>{if(local.has(key))push(key)},5000)}
+}
+
+/* ---------- views ---------- */
+const seg=(name,label,opts,val)=>`<fieldset class="seg"><legend>${label}</legend><div>${opts.map(([v,t])=>`<label><input type="radio" name="${name}" value="${v}" ${v===val?'checked':''}><span>${t}</span></label>`).join('')}</div></fieldset>`;
+const sel=(name,label,opts,val)=>`<label class="f">${label}<select name="${name}" id="s-${name}">${opts.map(([v,t])=>`<option value="${v}" ${String(v)===String(val)?'selected':''}>${t}</option>`).join('')}</select></label>`;
+const range=(a,b,f=x=>x)=>Array.from({length:b-a+1},(_,i)=>[a+i,f(a+i)]);
+const PTS=[['11','11 points'],['15','15 points']];
+function statusLine(v){
+  const sz=sizes(v.u,v.g).filter((x,i,a)=>a.indexOf(x)===i).join(' or '),unit=v.fixed?'teams':'players';
+  let s=v.fixed?`${v.u} teams · ${v.n} players`:`${v.n} players`;
+  if(v.u)s+=v.g>1?` · ${v.g} groups of ${sz} ${unit}`:' · one group';
+  if(!v.fixed&&v.u>=4){const r=+S.setup.rounds>0?+S.setup.rounds:autoRounds(Math.floor(v.u/v.g));s+=` · ${r} rounds each`}
+  return s;
+}
+function renderLanding(){
+  const su=S.setup,v=validate(),fixed=su.mode==='fixed',rc=recent();
+  $('#view').innerHTML=`<form class="panel" id="join"><h2>Join a tournament</h2><div class="row"><label class="f">Tournament code<input id="j-code" autocapitalize="none" autocomplete="off" maxlength="40" placeholder="e.g. k7m2qa"></label><button class="go" style="width:auto;flex:none">Open</button></div><p class="err" id="j-err" style="margin:0"></p>
+${rc.length?`<h3 style="margin-top:8px">On this device</h3><ul class="list">${rc.map(r=>`<li><a href="/tournament/${esc(r.code)}/">${esc(r.name)}<span>${esc(r.code)} →</span></a></li>`).join('')}</ul>`:''}</form>
+<form id="setup" class="panel" autocomplete="off"><h2>Create a tournament</h2>
+<label class="f">Tournament name<input name="name" id="s-name" maxlength="60" value="${esc(su.name)}"></label>
+${seg('mode','Partners',[['fixed','Fixed partners'],['rotating','Rotating partners']],su.mode)}
+<label class="f">${fixed?'Teams — one per line, e.g. Dave &amp; Louise':'Players — one per line'}<textarea name="text" id="s-text" rows="9">${esc(su.text)}</textarea></label>
+${su.text===SAMPLE?'<p class="sample">Sample names — replace with your players.</p>':''}
+<p class="hint" id="s-hint">${statusLine(v)}</p>
+${fixed?'<div class="row"><button type="button" class="ghost" data-act="pair">Draw random partners</button><span class="hint" style="margin:0">or put players one per line and they pair in order</span></div>':''}
+${seg('format','Format',[['rr','Round robin only'],['rrko','Round robin, then knockout']],su.format)}
+<div class="grid">
+${sel('groups','Round robin groups',range(1,8,x=>x===1?'1 group':x+' groups'),su.groups)}
+${sel('courts','Courts available',range(1,16,x=>x+(x>1?' courts':' court')),su.courts)}
+${sel('rrPts','Round robin games to',PTS,su.rrPts)}
+${fixed?'':`<label class="f">Rounds per group<input type="number" inputmode="numeric" min="1" max="40" name="rounds" id="s-rounds" value="${esc(su.rounds)}" placeholder="Auto"></label>`}
+</div>
+<label class="chk"><input type="checkbox" name="shuffle" ${su.shuffle?'checked':''}><span>Draw groups at random<br><span class="hint" style="margin:0">Off: seeded in the order listed — put the strongest first</span></span></label>
+${su.format==='rrko'?`<fieldset class="ko"><legend>Knockout</legend><div class="grid">
+${sel('qual','Qualify from each group',range(1,8,x=>'Top '+x),su.qual)}
+${sel('koPts','Knockout games to',PTS,su.koPts)}
+${sel('koBo','Knockout matches',[['1','1 game'],['3','Best of 3'],['f3','1 game, final best of 3']],su.koBo)}
+</div><p class="hint" style="margin:0 0 14px">Group winners are seeded highest and meet lower-placed qualifiers from other groups (A1 v B2, B1 v A2).${fixed?'':' With rotating partners, qualifiers are paired into knockout teams — best with lowest-ranked — to keep teams balanced.'}</p></fieldset>`:''}
+<label class="f">Tournament PIN<input id="s-pin" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password" value="${esc(newPin)}" placeholder="4 to 8 digits"></label>
+<p class="hint">Anyone with the link and this PIN can see the tournament and enter results. Share it with your players.</p>
+<div class="trap" aria-hidden="true"><input id="s-web" tabindex="-1" autocomplete="off"></div>
+<p class="err" id="s-err">${esc(v.msg)}</p>
+<button class="go" id="go" ${v.ok?'':'disabled'}>Create tournament</button>
+</form>`;
+}
+function refreshSetup(){const v=validate();$('#s-hint').textContent=statusLine(v);$('#s-err').textContent=v.msg;$('#go').disabled=!v.ok}
+function renderPin(msg){
+  $('#tabs').hidden=true;status('');
+  $('#view').innerHTML=`<form class="panel" id="pinform"><h2>Enter the tournament PIN</h2><p>Ask the organiser for the PIN to see this tournament and enter scores.</p>
+<label class="f">PIN<input id="p-pin" type="password" inputmode="numeric" maxlength="8" autocomplete="off" autofocus></label><p class="err">${esc(msg||'')}</p><button class="go">Open tournament</button></form>
+<p><a href="/tournament/">Create or find another tournament</a></p>`;
+}
+function renderMissing(){$('#tabs').hidden=true;$('#title').textContent='Tournament not found';$('#view').innerHTML=`<div class="empty"><h3>There’s no tournament at this address</h3><p>Check the code with the organiser.</p><a class="btn" style="display:inline-flex;align-items:center;text-decoration:none" href="/tournament/">Find a tournament</a></div>`}
+function sideRow(cls,label,input){return `<div class="side ${cls}"><span class="nm">${label}</span>${input}</div>`}
+function renderMatches(){
+  const t=S.t,P=+t.cfg.rrPts,fl=S.filter,list=t.matches.filter(m=>fl==='all'||m.g===+fl),dn=t.matches.filter(done).length;
+  let html=`<h2>Round robin</h2><div>${dn} of ${t.matches.length} games played · games to ${P}</div><div class="progress"><i style="width:${dn/t.matches.length*100}%"></i></div>`;
+  if(t.groups.length>1)html+=`<div class="chips">${[['all','All groups'],...t.groups.map((g,i)=>[String(i),'Group '+g.name])].map(([v,l])=>`<button data-filter="${v}" aria-pressed="${String(fl)===v}">${l}</button>`).join('')}</div>`;
+  const rounds=[...new Set(list.map(m=>m.round))];
+  html+=rounds.map(r=>{const ms=list.filter(m=>m.round===r);
+    let sitting='';if(t.mode==='rotating'){const on=new Set(t.matches.filter(m=>m.round===r).flatMap(m=>[...m.a,...m.b]));
+      const off=t.groups.flatMap((g,gi)=>fl==='all'||gi===+fl?g.ids:[]).filter(id=>!on.has(id));if(off.length)sitting=`<p class="hint" style="margin:4px 0 8px">Sitting out: ${esc(off.map(pname).join(', '))}</p>`}
+    return `<h3 style="margin-top:22px">Round ${r}</h3>${sitting}<div class="cards">${ms.map(m=>{
+      const d=done(m),wa=d&&+m.sa>+m.sb,wb=d&&+m.sb>+m.sa,warn=d&&odd(+m.sa,+m.sb,P);
+      const inp=(k,val,lab)=>`<input id="m-${m.id}-${k}" data-m="${m.id}" data-k="${k}" type="number" inputmode="numeric" min="0" max="99" value="${esc(val)}" aria-label="${esc(lab)} score">`;
+      return `<div class="card ${d?'done':''}"><div class="meta"><span>Court ${m.court}</span>${t.groups.length>1?`<span>Group ${t.groups[m.g].name}</span>`:''}${warn?'<span class="warn">Check score</span>':''}${m.sa!==''&&m.sb!==''&&+m.sa===+m.sb?'<span class="warn">Tie — enter a winner</span>':''}</div>
+${sideRow(wa?'win':'',esc(names(m.a)),inp('a',m.sa,names(m.a)))}${sideRow(wb?'win':'',esc(names(m.b)),inp('b',m.sb,names(m.b)))}</div>`}).join('')}</div>`}).join('');
+  $('#view').innerHTML=html;
+}
+function renderStandings(){
+  const t=S.t,Q=t.cfg.format==='rrko'?+t.cfg.qual:0;
+  $('#view').innerHTML=`<h2>Standings</h2><p class="hint" style="margin:0 0 16px">Ranked by win rate, then average point difference, then points scored.${Q?' Highlighted rows qualify for the knockout.':''}</p><div class="tables">${t.groups.map((g,gi)=>`<div>${t.groups.length>1?`<h3>Group ${g.name}</h3>`:''}<div class="scroll"><table><thead><tr><th>#</th><th>${t.mode==='fixed'?'Team':'Player'}</th><th>P</th><th>W</th><th>L</th><th>PD</th><th>PF</th></tr></thead><tbody>${standings(gi).map((r,i)=>`<tr class="${i<Q?'q':''}"><td>${i+1}</td><td>${esc(uname(r.id))}</td><td>${r.P}</td><td>${r.W}</td><td>${r.L}</td><td>${r.PF-r.PA>0?'+':''}${r.PF-r.PA}</td><td>${r.PF}</td></tr>`).join('')}</tbody></table></div></div>`).join('')}</div>`;
+}
+function renderKO(){
+  const t=S.t;
+  if(!t.ko){const dn=t.matches.filter(done).length,left=t.matches.length-dn;
+    $('#view').innerHTML=`<div class="empty"><h3>Knockout draw</h3><p>${left?`${left} round robin game${left>1?'s are':' is'} still to play. You can draw now, but unplayed games won't count.`:'All round robin games are in — ready to draw.'}</p><p>Top ${t.cfg.qual} from each group qualify${t.mode==='rotating'?' and are paired into teams (best with lowest-ranked)':''}.</p><button class="btn" data-act="ko">Create knockout draw</button></div>`;return}
+  const rounds=koData(),R=rounds.length,P=+t.cfg.koPts,fin=rounds[R-1][0];
+  let html=real(fin.w)?`<div class="champ"><div>Champions</div><h3>${esc(names(fin.w.pids))}</h3></div>`:'';
+  html+=`<div class="row"><h2 style="margin:0;flex:1">Knockout</h2><button class="ghost" data-act="ko" data-confirm>Redraw from standings</button></div><div class="bracket">`;
+  html+=rounds.map((ms,r)=>`<section><h3>${rname(r,R)}</h3><div class="cards" style="grid-template-columns:1fr">${ms.map((m,i)=>{
+    const live=real(m.a)&&real(m.b),g=m.sc.g,n=m.bo===1?1:(m.wa===1&&m.wb===1)||(g[2]&&(g[2][0]!==''||g[2][1]!==''))?3:2;
+    const lab=x=>!x?'<span class="bye">Bye</span>':x.tbd?'<span class="bye">To be decided</span>':`<span class="tag">${esc(x.tag)}</span>${esc(names(x.pids))}`;
+    const ins=k=>live?Array.from({length:n},(_,gi)=>`<input id="k-${m.id}-${gi}-${k}" data-ko="${m.id}" data-sig="${m.sig}" data-gi="${gi}" data-k="${k}" type="number" inputmode="numeric" min="0" max="99" value="${esc(g[gi]&&g[gi][k]!=null?g[gi][k]:'')}" aria-label="Game ${gi+1}">`).join(''):'';
+    const warn=live&&g.some(x=>filled(x)&&odd(+x[0],+x[1],P));
+    const note=!live&&real(m.w)&&(!m.a||!m.b)?'<span>Bye — advances</span>':'';
+    return `<div class="card ${real(m.w)?'done':''} ${n>1?'ko3':''}"><div class="meta"><span>${R-r===1?'Final':rname(r,R).replace(/s$/,'')+' '+(i+1)}</span><span>${m.bo===3?'Best of 3':'1 game'} to ${P}</span>${note}${warn?'<span class="warn">Check score</span>':''}</div>
+${live&&n>1?`<div class="gh">${Array.from({length:n},(_,gi)=>`<span>G${gi+1}</span>`).join('')}</div>`:''}
+${sideRow(real(m.w)&&m.w===m.a&&live?'win':'',lab(m.a),ins(0))}${sideRow(real(m.w)&&m.w===m.b&&live?'win':'',lab(m.b),ins(1))}</div>`}).join('')}</div></section>`).join('');
+  $('#view').innerHTML=html+'</div>';
+}
+function renderShare(){
+  const url=location.origin+'/tournament/'+CODE+'/';
+  $('#view').innerHTML=`<div class="panel"><h2>Share this tournament</h2><p>Send players this link, and tell them the PIN. Anyone with both can follow along and enter scores — results update on everyone’s phone every 15 seconds.</p>
+<p class="link">${esc(url)}</p><div class="row"><button class="btn" data-act="copylink">Copy link</button></div>
+<p class="hint" style="margin:0">Or they can open pickleballwanderers.com/tournament and enter the code</p><p class="code">${esc(CODE)}</p>
+<div class="row" style="margin-top:20px"><button class="ghost" data-act="forget" data-confirm>Forget PIN on this device</button><a class="ghost" style="display:inline-flex;align-items:center;text-decoration:none" href="/tournament/">New tournament</a></div></div>`;
+}
+function render(){
+  dirty=false;
+  if(!CODE){$('#tabs').hidden=true;renderLanding();return}
+  if(!S.t)return;
+  const c=S.t.cfg,ko=c.format==='rrko';
+  if(!ko&&S.tab==='knockout')S.tab='matches';
+  $('#title').textContent=S.name;document.title=S.name+' · Pickleball Wanderers';
+  $('#sub').textContent=`${S.t.mode==='fixed'?'Fixed':'Rotating'} partners · ${S.t.players.length} players · ${S.t.groups.length>1?S.t.groups.length+' groups':'1 group'} · round robin to ${c.rrPts}${ko?` → knockout to ${c.koPts}`:''}`;
+  const tabs=[['matches','Matches'],['standings','Standings'],...(ko?[['knockout','Knockout']]:[]),['share','Share']];
+  $('#tabs').hidden=false;$('#tabs').innerHTML=tabs.map(([k,l])=>`<button role="tab" data-tab="${k}" aria-selected="${S.tab===k}">${l}</button>`).join('');
+  ({matches:renderMatches,standings:renderStandings,knockout:renderKO,share:renderShare})[S.tab]();
+}
+function later(){setTimeout(()=>{const id=document.activeElement&&document.activeElement.id;render();if(id){const e=document.getElementById(id);if(e)e.focus({preventScroll:true})}},0)}
+
+/* ---------- events ---------- */
+document.addEventListener('click',async e=>{
+  const tb=e.target.closest('[data-tab]');if(tb){S.tab=tb.dataset.tab;ls.set('pbw-tourney-tab:'+CODE,S.tab);render();window.scrollTo({top:0});return}
+  const f=e.target.closest('[data-filter]');if(f){S.filter=f.dataset.filter;ls.set('pbw-tourney-filter:'+CODE,S.filter);render();return}
+  const b=e.target.closest('[data-act]');if(!b)return;
+  if(b.hasAttribute('data-confirm')&&!b.dataset.armed){b.dataset.armed='1';b.dataset.txt=b.textContent;b.textContent='Tap again to confirm';setTimeout(()=>{if(b.isConnected){delete b.dataset.armed;b.textContent=b.dataset.txt}},3500);return}
+  const a=b.dataset.act;
+  if(a==='pair'){const all=S.setup.text.split('\n').flatMap(l=>l.split(/\s*[&\/+]\s*/)).map(s=>s.trim()).filter(Boolean);shuffle(all);const out=[];for(let i=0;i<all.length;i+=2)out.push(all[i+1]?all[i]+' & '+all[i+1]:all[i]);S.setup.text=out.join('\n');saveDraft();render()}
+  if(a==='ko'){b.disabled=true;status('Drawing…');try{const ko=await api('/ko','POST',{seeds:drawKO()});S.t.ko={seeds:ko.seeds,scores:{}};[...local].filter(k=>k[0]==='k').forEach(k=>local.delete(k));status('Saved');render();refresh(true)}catch(err){if(err.code!=='pin'){status(err.msg||'Couldn’t save the draw — try again',true);b.disabled=false}}}
+  if(a==='forget'){ls.del(PKEY);pin='';stopPoll();S.t=null;renderPin()}
+  if(a==='copylink'){try{await navigator.clipboard.writeText(location.origin+'/tournament/'+CODE+'/');b.textContent='Copied'}catch(err){b.textContent='Select the link above to copy'}}
+});
+document.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(e.target.id==='setup')return create();
+  if(e.target.id==='join'){const raw=$('#j-code').value.trim().toLowerCase(),m=raw.match(/([a-z0-9]{6})\/?$/);if(!m){$('#j-err').textContent='Enter the 6-character code or paste the link.';return}location.href='/tournament/'+m[1]+'/';return}
+  if(e.target.id==='pinform'){const v=$('#p-pin').value.trim();if(!v)return;pin=v;
+    try{await api('/check-pin','POST');ls.set(PKEY,pin);status('Loading…');await refresh(true);startPoll()}
+    catch(err){if(err.code===404)renderMissing();else if(err.code!=='pin')renderPin(err.msg||'Couldn’t reach the server — check your connection.')}}
+});
+document.addEventListener('input',e=>{
+  const el=e.target;
+  if(el.id==='s-pin'){newPin=el.value.trim();refreshSetup();return}
+  if(el.closest('#setup')&&el.name){S.setup[el.name]=el.type==='checkbox'?el.checked:el.value;saveDraft();
+    if(el.type==='text'||el.type==='number'||el.tagName==='TEXTAREA')refreshSetup();else render();return}
+  if(el.dataset.m){const m=S.t.matches[+el.dataset.m];m[el.dataset.k==='a'?'sa':'sb']=el.value.trim();const k='m'+m.id;local.add(k);ver[k]=(ver[k]||0)+1;return}
+  if(el.dataset.ko){const ko=S.t.ko,id=el.dataset.ko;let sc=ko.scores[id];if(!sc||sc.sig!==el.dataset.sig)sc=ko.scores[id]={sig:el.dataset.sig,g:[]};
+    const gi=+el.dataset.gi;for(let i=0;i<=gi;i++)sc.g[i]=sc.g[i]||['',''];sc.g[gi][+el.dataset.k]=el.value.trim();const k='k'+id;local.add(k);ver[k]=(ver[k]||0)+1}
+});
+document.addEventListener('change',e=>{const el=e.target;
+  if(el.dataset.m){push('m'+el.dataset.m);later()}
+  else if(el.dataset.ko){push('k'+el.dataset.ko);later()}});
+document.addEventListener('focusout',()=>{if(dirty)later()});
+
+if(!CODE)render();
+else{S.tab=ls.get('pbw-tourney-tab:'+CODE)||'matches';$('#title').textContent='Tournament';$('#sub').textContent='';
+  if(!pin)renderPin();else{status('Loading…');refresh(true).then(()=>{if(pin)startPoll()})}}
+}
+</script>
+</body>
+</html>
